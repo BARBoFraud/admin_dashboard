@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authService from "@/services/authService";
+import { login } from "../api/authService";
 
 export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,11 +19,16 @@ export default function Login() {
       return;
     }
 
-    const success = await authService.login(username.trim(), password.trim());
-    if (success) {
-      navigate("/dashboard");
-    } else {
-      setError("Credenciales inválidas");
+    setLoading(true);
+
+    try {
+      await login(username, password);
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError("Credenciales incorrectas. Inténtalo de nuevo.");
+      console.error("Error de login:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,6 +48,7 @@ export default function Login() {
             setUsername(e.target.value);
           }}
           className="w-full mb-3 p-2 border rounded"
+          disabled={loading}
         />
 
         <input
@@ -52,15 +59,17 @@ export default function Login() {
             setPassword(e.target.value);
           }}
           className="w-full mb-3 p-2 border rounded"
+          disabled={loading}
         />
 
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+          disabled={loading}
         >
-          Entrar
+          {loading ? "Cargando..." : "Entrar"}
         </button>
       </form>
     </div>

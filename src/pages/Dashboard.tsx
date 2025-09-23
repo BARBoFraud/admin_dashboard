@@ -1,56 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import adminService from '../services/adminService';
-import authService from '../services/authService';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Admin {
-  id: number;
-  username: string;
-}
+import AdminList from '../components/AdminList';
 
 const Dashboard: React.FC = () => {
-  const [admins, setAdmins] = useState<Admin[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        setLoading(true);
-        const adminData = await adminService.getAdmins();
-        setAdmins(adminData);
-      } catch (err) {
-        setError('Error al cargar los administradores');
-        console.error('Error fetching admins:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAdmins();
-  }, []);
-
   const handleLogout = () => {
-    authService.logout();
     navigate('/login');
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <div>Cargando administradores...</div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="text-red-500 text-center p-4">
-      {error}
-    </div>
-  );
-
   return (
     <div className="dashboard p-6">
-
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard de Administradores</h1>
         <button
@@ -64,28 +24,7 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {admins.map((admin) => (
-          <div key={admin.id} className="bg-white p-4 rounded-lg shadow border">
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-100 p-2 rounded-full">
-                <span className="text-blue-600 font-semibold">#{admin.id}</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">{admin.username}</h3>
-                <p className="text-sm text-gray-600">Administrador</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {admins.length === 0 && (
-        <div className="text-center text-gray-500 mt-8">
-          No hay administradores registrados
-        </div>
-      )}
+      <AdminList />
     </div>
   );
 };

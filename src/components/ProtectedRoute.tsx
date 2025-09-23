@@ -1,14 +1,22 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
-const isTokenValid = () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return false;
-    return true
-};
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-const ProtectedRoute = () => {
-    const isAuthenticated = isTokenValid();
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
