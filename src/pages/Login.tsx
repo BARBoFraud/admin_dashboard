@@ -39,7 +39,6 @@ export default function Login() {
           placeholder="Usuario"
           value={username}
           onChange={(e) => {
-            console.log("Username changed:", e.target.value);
             setUsername(e.target.value);
           }}
           className="w-full mb-3 p-2 border rounded"
@@ -50,7 +49,6 @@ export default function Login() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => {
-            console.log("Password changed:", e.target.value);
             setPassword(e.target.value);
           }}
           className="w-full mb-3 p-2 border rounded"
