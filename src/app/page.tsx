@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { LoginForm } from "@/components/login-form";
@@ -12,7 +12,7 @@ export default function Page() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isLoggedIn, router]);
 
@@ -26,4 +26,5 @@ export default function Page() {
       </div>
     </div>
   );
-}  
+}
+
