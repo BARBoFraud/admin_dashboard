@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ofraud Admin Dashboard",
+  title: "Ofraud",
   description: "Dashboard de administrador de la aplicacion de ofraud",
 };
 
