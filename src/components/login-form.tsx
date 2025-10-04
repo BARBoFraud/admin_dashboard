@@ -14,10 +14,7 @@ const loginSchema = Yup.object().shape({
   password: Yup.string().required("Password is required."),
 });
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function LoginForm() {
   const { login, isLoading, error, isLoggedIn } = useAdminLogin();
   const router = useRouter();
 
@@ -31,7 +28,8 @@ export function LoginForm({
     <Card>
       <Formik
         validationSchema={loginSchema}
-        validateOnChange={true}
+        validateOnChange={false}
+        validateOnBlur={true}
         initialValues={{
           username: "",
           password: "",
@@ -40,8 +38,8 @@ export function LoginForm({
           await login(values);
         }}
       >
-        {({ errors, values, setFieldValue }) => (
-          <Form className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+        {({ errors, values, touched, handleChange, handleBlur }) => (
+          <Form className={"flex flex-col gap-6 p-6"}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-1 text-center">
                 <h1 className="text-2xl font-bold">Ingresa a tu cuenta</h1>
@@ -58,11 +56,12 @@ export function LoginForm({
                   name="username"
                   type="text"
                   value={values.username}
-                  onChange={(e) => setFieldValue("username", e.target.value)}
-                  className={errors.username ? "border-red-500" : ""}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={errors.username && touched.username ? "border-red-500" : ""}
                   required
                 />
-                {errors.username && (
+                {errors.username && touched.username && (
                   <p className="text-red-700 text-sm mt-1">{errors.username}</p>
                 )}
               </Field>
@@ -73,11 +72,12 @@ export function LoginForm({
                   name="password"
                   type="password"
                   value={values.password}
-                  onChange={(e) => setFieldValue("password", e.target.value)}
-                  className={errors.password ? "border-red-500" : ""}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={errors.password && touched.password ? "border-red-500" : ""}
                   required
                 />
-                {errors.password && (
+                {errors.password && touched.password && (
                   <p className="text-red-700 text-sm mt-1">{errors.password}</p>
                 )}
               </Field>
