@@ -1,6 +1,12 @@
+"use client";
 import { useState } from "react";
-import { adminLogin, adminLogout } from "../services/auth.service";
+import {
+  adminLogin,
+  adminLogout,
+  refreshToken,
+} from "../services/auth.service";
 import { AdminLoginDto, AdminLoginResponse } from "../types/auth.dto";
+import { useRouter } from "next/navigation";
 
 interface UseAdminLoginReturn {
   isLoading: boolean;
@@ -8,11 +14,13 @@ interface UseAdminLoginReturn {
   isLoggedIn: boolean;
   login: (credentials: AdminLoginDto) => Promise<void>;
   logout: () => void;
+  executeRefresh: () => Promise<boolean>;
 }
 
 export function useAdminLogin(): UseAdminLoginReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("accessToken") !== null;
@@ -64,11 +72,40 @@ export function useAdminLogin(): UseAdminLoginReturn {
     setError(null);
   };
 
+  const executeRefresh = async (): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const currentRefreshToken = localStorage.getItem("refreshToken");
+      if (!currentRefreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      const response = await refreshToken(currentRefreshToken);
+      localStorage.setItem("accessToken", response.accessToken);
+      return true;
+    } catch (err: any) {
+      const errorMessage = "Token refresh failed. Redirecting to login.";
+      setError(errorMessage);
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      setIsLoggedIn(false);
+
+      router.push("/");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     isLoading,
     error,
     isLoggedIn,
     login,
     logout,
+    executeRefresh,
   };
 }

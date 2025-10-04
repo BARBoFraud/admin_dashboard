@@ -1,6 +1,7 @@
 import { getAdmins } from "@/services/admin.service";
 import { AdminDto } from "@/types/admin.dto";
 import { useState } from "react";
+import { useAdminLogin } from "./auth.hooks";
 
 interface UseAdminListReturn {
   isLoading: boolean;
@@ -13,31 +14,42 @@ export function useAdminList(): UseAdminListReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [admins, setAdmins] = useState<AdminDto[] | null>(null);
+  const { executeRefresh } = useAdminLogin();
 
   const fetchAdmins = async (): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
     try {
-        const response = await getAdmins();
-        setAdmins(response);
+      const refreshSuccess = await executeRefresh();
+      if (!refreshSuccess) {
+        return;
+      }
+
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("No access token available");
+      }
+
+      const response = await getAdmins(accessToken);
+      setAdmins(response);
     } catch (err: any) {
-        let errorMessage = "Failed to fetch admins. Please try again.";
+      let errorMessage = "Failed to fetch admins. Please try again.";
 
-        if (err.response?.status) {
-            switch (err.response.status) {
-                case 401:
-                    errorMessage = "Unauthorized access. Please log in.";
-                    break;
-                default:
-                    errorMessage = `Failed to fetch admins (${err.response.status}). Please try again.`;
-            }
+      if (err.response?.status) {
+        switch (err.response.status) {
+          case 401:
+            errorMessage = "Unauthorized access. Please log in.";
+            break;
+          default:
+            errorMessage = `Failed to fetch admins (${err.response.status}). Please try again.`;
         }
+      }
 
-        setError(errorMessage);
-        setAdmins(null);
+      setError(errorMessage);
+      setAdmins(null);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 

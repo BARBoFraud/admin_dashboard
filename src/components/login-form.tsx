@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -58,7 +57,9 @@ export function LoginForm() {
                   value={values.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={errors.username && touched.username ? "border-red-500" : ""}
+                  className={
+                    errors.username && touched.username ? "border-red-500" : ""
+                  }
                   required
                 />
                 {errors.username && touched.username && (
@@ -74,7 +75,9 @@ export function LoginForm() {
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={errors.password && touched.password ? "border-red-500" : ""}
+                  className={
+                    errors.password && touched.password ? "border-red-500" : ""
+                  }
                   required
                 />
                 {errors.password && touched.password && (

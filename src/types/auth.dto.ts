@@ -8,3 +8,7 @@ export interface AdminLoginResponse {
   refreshToken: string;
 }
 
+export interface RefreshTokenResponse {
+  accessToken: string;
+}
+

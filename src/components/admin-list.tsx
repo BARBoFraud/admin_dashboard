@@ -72,3 +72,4 @@ export function AdminList() {
     </Card>
   );
 }
+
