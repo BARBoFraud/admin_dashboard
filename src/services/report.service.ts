@@ -9,3 +9,15 @@ export async function getPendingReports(token: string): Promise<ReportDto[]> {
   });
   return response.data;
 }
+
+export async function changeReportStatus(token: string, reportId: number, statusId: number): Promise<void> {
+  await axios.patch(
+    `${BASE_URL}/reports/evaluate`,
+    { reportId, statusId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+}
+
+
