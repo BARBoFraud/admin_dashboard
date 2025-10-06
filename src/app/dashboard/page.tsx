@@ -3,12 +3,17 @@ import { AdminList } from "@/components/admin-list";
 
 export default function DashboardPage() {
   return (
-    <div className="p-8">
+    <div className="min-h-screen bg-background">
       <DashboardHeader />
-      <div className="grid gap-6">
-        <AdminList />
-      </div>
+      <main className="p-8 max-w-7xl mx-auto">
+        <div className="bg-card rounded-md p-6">
+          <div className="grid gap-6">
+            <AdminList />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
+
 
