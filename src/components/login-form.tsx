@@ -7,10 +7,12 @@ import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card } from "./ui/card";
+import logo from "@/components/assets/imgMaluma.jpeg";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const loginSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required."),
-  password: Yup.string().required("Password is required."),
+  username: Yup.string().required("Necesita un nombre de usuario."),
+  password: Yup.string().required("Necesita una contraseña."),
 });
 
 export function LoginForm() {
@@ -39,9 +41,19 @@ export function LoginForm() {
       >
         {({ errors, values, touched, handleChange, handleBlur }) => (
           <Form className={"flex flex-col gap-6 p-6"}>
+            <div className="flex justify-end">
+              <ModeToggle />
+            </div>
             <FieldGroup>
+              <div>
+                <img
+                  src={logo.src}
+                  alt="Logo"
+                  className="w-30 h-30 rounded-full mx-auto mb-4"
+                />
+              </div>
               <div className="flex flex-col items-center gap-1 text-center">
-                <h1 className="text-2xl font-bold">Ingresa a tu cuenta</h1>
+                <h1 className="text-2xl font-bold">oFraud</h1>
               </div>
               {error && (
                 <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
