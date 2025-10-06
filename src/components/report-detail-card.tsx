@@ -18,7 +18,10 @@ function formatDate(dateStr?: string | null) {
   }
 }
 
-export default function ReportDetailCard({ report, onClose, }: {
+export default function ReportDetailCard({
+  report,
+  onClose,
+}: {
   report: ReportDto;
   onClose: () => void;
 }) {
@@ -76,14 +79,20 @@ export default function ReportDetailCard({ report, onClose, }: {
               <div className="mt-1 text-sm">{report.description ?? "-"}</div>
 
               <div className="text-sm text-muted-foreground mt-3">Usuario</div>
-              <div className="mt-1 font-medium">{report.username ?? "-"}</div>
-
-              <div className="text-sm text-muted-foreground mt-3">Categoría</div>
+              <div className="mt-1 font-medium"></div>
+              {report.name !== "" && report.lastName !== ""
+                ? `${report.name} ${report.lastName}`
+                : "-"}
+              <div className="text-sm text-muted-foreground mt-3">
+                Categoría
+              </div>
               <div className="mt-1 capitalize">{report.category ?? "-"}</div>
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground">{primaryLabel}</div>
+              <div className="text-sm text-muted-foreground">
+                {primaryLabel}
+              </div>
               <div className="mt-1 capitalize">{primaryValue}</div>
 
               {!report.image && (

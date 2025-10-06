@@ -19,7 +19,7 @@ export function usePendingReports() {
       if (!refreshSuccess) {
         return;
       }
-      
+
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         throw new Error("No access token available");
@@ -38,7 +38,6 @@ export function usePendingReports() {
       setIsLoading(false);
     }
   }, [executeRefresh]);
-
 
   return {
     isLoading,

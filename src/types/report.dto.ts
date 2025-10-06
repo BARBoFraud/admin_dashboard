@@ -1,5 +1,7 @@
 export interface ReportDto {
   id: number;
+  name: string;
+  lastName: string;
   description: string | null;
   url?: string | null;
   website?: string | null;
