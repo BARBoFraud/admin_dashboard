@@ -77,14 +77,8 @@ export function useAdminLogin() {
       localStorage.setItem("accessToken", response.accessToken);
       return true;
     } catch (err: any) {
-      const errorMessage = "Token refresh failed. Redirecting to login.";
-      setError(errorMessage);
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      setIsLoggedIn(false);
-
-      router.push("/");
+      await logout();
+      router.replace("/");
       return false;
     } finally {
       setIsLoading(false);
