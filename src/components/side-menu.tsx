@@ -22,7 +22,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    router.replace("/");
   };
 
   return (
@@ -30,7 +30,9 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
       <div
         aria-hidden={!open}
         className={`fixed inset-0 z-40 transition-opacity ${
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       >
@@ -45,7 +47,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
       >
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           <h2 className="text-lg font-semibold">Menú</h2>
-          <Button variant="ghost" size="icon" onClick={onClose} >
+          <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -56,7 +58,8 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
             className="w-full justify-start"
             onClick={() => navigateTo("/dashboard")}
           >
-            <Users className="mr-2 h-4 w-4" /> Administrar cuentas de administradores 
+            <Users className="mr-2 h-4 w-4" /> Administrar cuentas de
+            administradores
           </Button>
 
           <Button

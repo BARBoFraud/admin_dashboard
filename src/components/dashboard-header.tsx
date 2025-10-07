@@ -10,13 +10,13 @@ import { Menu } from "lucide-react";
 import { SideMenu } from "@/components/side-menu";
 
 export function DashboardHeader() {
-  const {isLoggedIn } = useAdminLogin();
+  const { isLoggedIn } = useAdminLogin();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) {
-      router.push("/");
+      router.replace("/");
     }
   }, [isLoggedIn, router]);
 

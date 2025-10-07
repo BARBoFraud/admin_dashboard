@@ -21,7 +21,7 @@ export function LoginForm() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
     }
   }, [isLoggedIn, router]);
 
