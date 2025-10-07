@@ -38,7 +38,7 @@ export function usePendingReports() {
     } finally {
       setIsLoading(false);
     }
-  };;
+  };
 
   const updateReportStatus = async (reportId: number, newStatus: number) => {
     setIsLoading(true);
@@ -64,7 +64,7 @@ export function usePendingReports() {
       setIsLoading(false);
       await fetchReports();
     }
-  }
+  };
 
   return {
     isLoading,

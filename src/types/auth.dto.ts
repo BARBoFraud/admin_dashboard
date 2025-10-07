@@ -11,4 +11,3 @@ export interface AdminLoginResponse {
 export interface RefreshTokenResponse {
   accessToken: string;
 }
-

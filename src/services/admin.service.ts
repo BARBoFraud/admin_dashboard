@@ -12,7 +12,10 @@ export async function getAdminsService(token: string): Promise<AdminDto[]> {
   return response.data;
 }
 
-export async function deleteAdminService(token: string, adminId: number): Promise<void> {
+export async function deleteAdminService(
+  token: string,
+  adminId: number,
+): Promise<void> {
   await axios.delete(`${BASE_URL}/admins/${adminId}`, {
     headers: {
       Authorization: `Bearer ${token}`,

@@ -34,4 +34,3 @@ export async function refreshToken(
   );
   return response.data;
 }
-

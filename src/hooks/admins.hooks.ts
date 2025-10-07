@@ -80,8 +80,7 @@ export function useAdminList(): UseAdminListReturn {
             errorMessage = "Unauthorized access. Please log in.";
             break;
           case 404:
-            errorMessage =
-              "Admin not found. It may have already been deleted.";
+            errorMessage = "Admin not found. It may have already been deleted.";
             break;
           default:
             errorMessage = `Failed to delete admin (${err.response.status}). Please try again.`;
