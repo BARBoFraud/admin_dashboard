@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   getPendingReports,
   changeReportStatus,
@@ -71,5 +71,6 @@ export function usePendingReports() {
     error,
     reports,
     fetchReports,
+    updateReportStatus,
   };
 }

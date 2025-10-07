@@ -8,16 +8,7 @@ import {
 import { AdminLoginDto, AdminLoginResponse } from "../types/auth.dto";
 import { useRouter } from "next/navigation";
 
-interface UseAdminLoginReturn {
-  isLoading: boolean;
-  error: string | null;
-  isLoggedIn: boolean;
-  login: (credentials: AdminLoginDto) => Promise<void>;
-  logout: () => void;
-  executeRefresh: () => Promise<boolean>;
-}
-
-export function useAdminLogin(): UseAdminLoginReturn {
+export function useAdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
