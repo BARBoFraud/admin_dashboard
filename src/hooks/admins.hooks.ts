@@ -8,6 +8,7 @@ interface UseAdminListReturn {
   error: string | null;
   admins: AdminDto[] | null;
   fetchAdmins: () => Promise<void>;
+  deleteAdmin: (adminId: number) => Promise<void>;
 }
 
 export function useAdminList(): UseAdminListReturn {
@@ -51,44 +52,45 @@ export function useAdminList(): UseAdminListReturn {
     } finally {
       setIsLoading(false);
     }
+  };
 
-    const deleteAdmin = async (adminId: number): Promise<void> => {
-      setIsLoading(true);
-      setError(null);
+  const deleteAdmin = async (adminId: number): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const refreshSuccess = await executeRefresh();
-        if (!refreshSuccess) {
-          return;
-        }
-
-        const accessToken = localStorage.getItem("accessToken");
-        if (!accessToken) {
-          throw new Error("No access token available");
-        }
-
-        await deleteAdminService(accessToken, adminId);
-        await fetchAdmins();
-      } catch (err: any) {
-        let errorMessage = "Failed to delete admin. Please try again.";
-
-        if (err.response?.status) {
-          switch (err.response.status) {
-            case 401:
-              errorMessage = "Unauthorized access. Please log in.";
-              break;
-            case 404:
-              errorMessage = "Admin not found. It may have already been deleted.";
-              break;
-            default:
-              errorMessage = `Failed to delete admin (${err.response.status}). Please try again.`;
-          }
-        }
-
-        setError(errorMessage);
-      } finally {
-        setIsLoading(false);
+    try {
+      const refreshSuccess = await executeRefresh();
+      if (!refreshSuccess) {
+        return;
       }
+
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        throw new Error("No access token available");
+      }
+
+      await deleteAdminService(accessToken, adminId);
+      await fetchAdmins();
+    } catch (err: any) {
+      let errorMessage = "Failed to delete admin. Please try again.";
+
+      if (err.response?.status) {
+        switch (err.response.status) {
+          case 401:
+            errorMessage = "Unauthorized access. Please log in.";
+            break;
+          case 404:
+            errorMessage =
+              "Admin not found. It may have already been deleted.";
+            break;
+          default:
+            errorMessage = `Failed to delete admin (${err.response.status}). Please try again.`;
+        }
+      }
+
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,5 +99,6 @@ export function useAdminList(): UseAdminListReturn {
     error,
     admins,
     fetchAdmins,
+    deleteAdmin,
   };
 }
