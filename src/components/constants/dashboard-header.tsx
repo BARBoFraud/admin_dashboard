@@ -4,10 +4,10 @@ import { useAdminLogin } from "@/hooks/auth.hooks";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/constants/mode-toggle";
 import logo from "@/components/assets/imgMaluma.jpeg";
 import { Menu } from "lucide-react";
-import { SideMenu } from "@/components/side-menu";
+import { SideMenu } from "@/components/constants/side-menu";
 
 export function DashboardHeader() {
   const { isLoggedIn } = useAdminLogin();

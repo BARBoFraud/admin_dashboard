@@ -1,6 +1,6 @@
-import { DashboardHeader } from "@/components/dashboard-header";
-import { AdminList } from "@/components/admin-list";
-import RevisionReportes from "@/components/revision-reportes";
+import { DashboardHeader } from "@/components/constants/dashboard-header";
+import { AdminList } from "@/components/admin/admin-list";
+import RevisionReportes from "@/components/reports/revision-reportes";
 
 export default function DashboardPage() {
   return (

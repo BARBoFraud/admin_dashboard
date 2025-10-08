@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card } from "./ui/card";
 import logo from "@/components/assets/imgMaluma.jpeg";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/constants/mode-toggle";
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().required("Necesita un nombre de usuario."),
