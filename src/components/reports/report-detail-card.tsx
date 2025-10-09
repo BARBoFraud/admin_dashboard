@@ -79,10 +79,11 @@ export default function ReportDetailCard({
               <div className="mt-1 text-sm">{report.description ?? "-"}</div>
 
               <div className="text-sm text-muted-foreground mt-3">Usuario</div>
-              <div className="mt-1 font-medium"></div>
-              {report.name !== "" && report.lastName !== ""
-                ? `${report.name} ${report.lastName}`
-                : "-"}
+              <div className="mt-1 font-medium">
+                {report.name || report.lastName
+                  ? `${report.name} ${report.lastName}`
+                  : "-"}
+              </div>
               <div className="text-sm text-muted-foreground mt-3">
                 Categoría
               </div>
