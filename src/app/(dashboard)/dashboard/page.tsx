@@ -1,4 +1,5 @@
 "use client";
+import ReportsList from "@/components/features/ReportsList";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function DashboardPage() {
@@ -7,6 +8,7 @@ export default function DashboardPage() {
     <div>
       <h1>HOla amigos</h1>
       <button onClick={logout}>Logout</button>
+      <ReportsList />
     </div>
   );
 }
