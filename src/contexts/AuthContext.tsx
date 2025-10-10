@@ -27,16 +27,22 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    
     const accesTokenFromStorage = localStorage.getItem("accessToken");
     const refreshTokenFromStorage = localStorage.getItem("refreshToken");
+    
     if (accesTokenFromStorage && refreshTokenFromStorage) {
       setAccessToken(accesTokenFromStorage);
       setRefreshToken(refreshTokenFromStorage);
     }
+    
+    setIsInitialized(true);
   }, []);
+
   const setTokens = useCallback((tokens: Tokens) => {
     localStorage.setItem("accessToken", tokens.accessToken);
     localStorage.setItem("refreshToken", tokens.refreshToken);
@@ -53,72 +59,117 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (username: string, password: string) => {
-      const response = await axios.post(
-        "http://localhost:4000/v1/auth/admins/login",
-        {
-          username,
-          password,
-        },
-      );
-      if (response.status === 401) {
-        throw new Error("Credenciales inválidas");
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/v1/auth/admins/login",
+          {
+            username,
+            password,
+          },
+        );
+        
+        if (response.status === 401) {
+          throw new Error("Credenciales inválidas");
+        }
+        if (response.status !== 201) {
+          throw new Error("Error al iniciar sesión");
+        }
+        
+        const tokens: Tokens = response.data as Tokens;
+        setTokens(tokens);
+        console.log("Login successful");
+      } catch (error) {
+        // 8️⃣ Manejo específico de errores de axios
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            throw new Error("Credenciales inválidas");
+          }
+          if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+          }
+        }
+        throw error;
       }
-      if (response.status !== 201) {
-        throw new Error("Error al iniciar sesión");
-      }
-      const tokens: Tokens = response.data as Tokens;
-      setTokens(tokens);
     },
     [setTokens],
   );
 
   const logout = useCallback(async () => {
     const token = refreshToken;
-    if (!token) return;
-    const response = await axios.post(
-      "http://localhost:4000/v1/auth/admins/logout",
-      {
-        refreshToken: token,
-      },
-    );
-    if (response.status !== 201) {
-      throw new Error("Logout failed");
+    if (!token) {
+      clearTokens();
+      return;
     }
-    clearTokens();
+    
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/v1/auth/admins/logout",
+        {
+          refreshToken: token,
+        },
+      );
+      
+      if (response.status !== 201) {
+        console.warn("Logout failed with status:", response.status);
+      }
+      console.log("Logout successful");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      clearTokens();
+    }
   }, [refreshToken, clearTokens]);
 
   const refreshTokenFunc = useCallback(async () => {
-    if (!refreshToken) return;
+    const currentRefreshToken = localStorage.getItem("refreshToken");
+    
+    if (!currentRefreshToken) {
+      console.warn("No refresh token available");
+      return;
+    }
+    
     try {
       const response = await axios.post(
         "http://localhost:4000/v1/auth/admins/refresh",
         {
-          refreshToken,
+          refreshToken: currentRefreshToken,
         },
       );
-      if (response.status !== 200) {
-        logout();
+      
+      if (response.status !== 201) {
+        console.error("Refresh token failed with status:", response.status);
+        clearTokens();
         return;
       }
+      
       const tokens: Tokens = response.data as Tokens;
       setTokens(tokens);
+      console.log("Token refreshed successfully");
     } catch (error) {
-      console.error(error);
+      console.error("Error refreshing token:", error);
       clearTokens();
     }
-  }, [refreshToken, clearTokens]);
+  }, [clearTokens, setTokens]);
+
   const value = useMemo<AuthContextType>(
     () => ({
       accessToken,
       refreshToken,
-      isAuthenticated: accessToken !== null,
+      isAuthenticated: accessToken !== null && isInitialized,
       login,
       logout,
       refreshTokenFunc,
       setTokens,
     }),
-    [accessToken, refreshToken, login, logout, refreshTokenFunc, setTokens],
+    [accessToken, refreshToken, isInitialized, login, logout, refreshTokenFunc, setTokens],
   );
+
+  if (!isInitialized) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <p>Cargando...</p>
+    </div>;
+  }
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

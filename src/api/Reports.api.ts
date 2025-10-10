@@ -9,16 +9,30 @@ export function useReportsApi() {
   const { accessToken, refreshTokenFunc } = useAuth();
 
   const getPendingReports = useCallback(async () => {
-    const response = await axios.get<ShortPendingReport[]>(
-      `${BASE_URL}/v1/reports/pending`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    if (response.status === 401) {
-      await refreshTokenFunc();
-      return getPendingReports();
+    try {
+      const response = await axios.get<ShortPendingReport[]>(
+        `${BASE_URL}/v1/reports/pending`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        await refreshTokenFunc();
+        
+        const newAccessToken = localStorage.getItem("accessToken");
+        
+        if (!newAccessToken) {
+          throw new Error("No se pudo refrescar el token");
+        }
+        
+        const retryResponse = await axios.get<ShortPendingReport[]>(
+          `${BASE_URL}/v1/reports/pending`,
+          { headers: { Authorization: `Bearer ${newAccessToken}` } }
+        );
+        return retryResponse.data;
+      }
+      throw error;
     }
-    if (response.status !== 200) throw new Error("Failed to fetch pending reports");
-    return response.data;
   }, [accessToken, refreshTokenFunc]);
 
   return { getPendingReports };
