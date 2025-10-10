@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { X, Users, LogOut } from "lucide-react";
+import { X, Users, LogOut, GitGraph } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,6 +63,14 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
           </Button>
 
           <Button
+            variant={"ghost"}
+            className="w-full justify-start"
+            onClick={() => navigateTo("/dashboard")}
+          >
+            <GitGraph className="mr-2 h-4 w-4" /> Ir a Dashboard
+          </Button>
+
+          <Button
             variant="ghost"
             className="w-full justify-start"
             onClick={() => {
@@ -80,4 +88,3 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
     </>
   );
 }
-
