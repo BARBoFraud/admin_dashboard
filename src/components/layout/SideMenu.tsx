@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { X, Users, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useAdminLogin } from "@/hooks/auth.hooks";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SideMenuProps {
   open: boolean;
@@ -13,7 +13,7 @@ interface SideMenuProps {
 
 export function SideMenu({ open, onClose }: SideMenuProps) {
   const router = useRouter();
-  const { logout } = useAdminLogin();
+  const { logout } = useAuth();
 
   const navigateTo = (path: string) => {
     onClose();
@@ -56,7 +56,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => navigateTo("/dashboard")}
+            onClick={() => navigateTo("/admins")}
           >
             <Users className="mr-2 h-4 w-4" /> Administrar cuentas de
             administradores
@@ -80,3 +80,4 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
     </>
   );
 }
+

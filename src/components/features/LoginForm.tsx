@@ -1,29 +1,24 @@
-import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useAdminLogin } from "@/hooks/auth.hooks";
-import { Formik, Form } from "formik";
+"use client";
+import { useState } from "react";
 import * as Yup from "yup";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Card } from "./ui/card";
-import logo from "@/components/assets/imgMaluma.jpeg";
-import { ModeToggle } from "@/components/constants/mode-toggle";
+import { Formik, Form } from "formik";
+import { Card } from "../ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { ModeToggle } from "../layout/ModeToggle";
+import { FieldGroup, FieldLabel, Field } from "../ui/field";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import Logo from "@/public/imgMaluma.jpeg";
 
 const loginSchema = Yup.object().shape({
-  username: Yup.string().required("Necesita un nombre de usuario."),
-  password: Yup.string().required("Necesita una contraseña."),
+  username: Yup.string().required("Necesitas un nombre de usuario"),
+  password: Yup.string().required("Necesitas una contraseña"),
 });
 
 export function LoginForm() {
-  const { login, isLoading, error, isLoggedIn } = useAdminLogin();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.replace("/dashboard");
-    }
-  }, [isLoggedIn, router]);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const { login } = useAuth();
 
   return (
     <Card>
@@ -36,7 +31,17 @@ export function LoginForm() {
           password: "",
         }}
         onSubmit={async (values) => {
-          await login(values);
+          setIsLoggingIn(true);
+          setLoginError(null);
+          try {
+            await login(values.username, values.password);
+          } catch (error: any) {
+            setLoginError(
+              error.response?.data?.message ||
+                "Error desconocido, intenta de nuevo",
+            );
+            setIsLoggingIn(false);
+          }
         }}
       >
         {({ errors, values, touched, handleChange, handleBlur }) => (
@@ -47,7 +52,7 @@ export function LoginForm() {
             <FieldGroup>
               <div>
                 <img
-                  src={logo.src}
+                  src={Logo.src}
                   alt="Logo"
                   className="w-30 h-30 rounded-full mx-auto mb-4"
                 />
@@ -55,9 +60,9 @@ export function LoginForm() {
               <div className="flex flex-col items-center gap-1 text-center">
                 <h1 className="text-2xl font-bold">oFraud</h1>
               </div>
-              {error && (
+              {loginError && (
                 <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                  {error}
+                  {loginError}
                 </div>
               )}
               <Field>
@@ -97,8 +102,8 @@ export function LoginForm() {
                 )}
               </Field>
               <Field>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button type="submit" disabled={isLoggingIn}>
+                  {isLoggingIn ? "Logging in..." : "Login"}
                 </Button>
               </Field>
             </FieldGroup>

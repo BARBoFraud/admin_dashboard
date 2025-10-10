@@ -1,24 +1,14 @@
 "use client";
 
-import { useAdminLogin } from "@/hooks/auth.hooks";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ModeToggle } from "@/components/constants/mode-toggle";
-import logo from "@/components/assets/imgMaluma.jpeg";
+import { useState } from "react";
+import logo from "@/public/imgMaluma.jpeg";
 import { Menu } from "lucide-react";
-import { SideMenu } from "@/components/constants/side-menu";
+import { SideMenu } from "@/components/layout/SideMenu";
+import { ModeToggle } from "./ModeToggle";
 
 export function DashboardHeader() {
-  const { isLoggedIn } = useAdminLogin();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.replace("/");
-    }
-  }, [isLoggedIn, router]);
 
   return (
     <header className="w-full bg-sidebar text-sidebar-foreground shadow-lg border-b border-sidebar-border">
@@ -38,3 +28,4 @@ export function DashboardHeader() {
     </header>
   );
 }
+
