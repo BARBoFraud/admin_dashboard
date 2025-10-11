@@ -66,5 +66,28 @@ export function useAdminsApi() {
         }
     }, [accessToken, refreshTokenFunc]);
 
-    return { getAdminsList, createAdmin };
+    const deleteAdmin = useCallback(async (adminId: number): Promise<void> => {
+        try {
+            await axios.delete(`${BASE_URL}/v1/admins/delete/${adminId}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+        } catch (error) {
+            if(axios.isAxiosError(error) && error.response?.status === 401) {
+                await refreshTokenFunc();
+
+                const newAccessToken = localStorage.getItem("accessToken");
+
+                if(!newAccessToken) {
+                    throw new Error("No se pudo refrescar el token");
+                }
+
+                await axios.delete(`${BASE_URL}/v1/admins/delete/${adminId}`, {
+                    headers: { Authorization: `Bearer ${newAccessToken}` }
+                });
+            }
+            throw error;
+        }
+    }, [accessToken, refreshTokenFunc]);
+
+    return { getAdminsList, createAdmin, deleteAdmin };
 }

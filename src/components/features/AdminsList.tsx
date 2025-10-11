@@ -1,31 +1,109 @@
 "use client";
 import { AdminType } from "@/types/admin.types";
 import { Card } from "../ui/card";
+import { useAdminsApi } from "@/api/Admins.api";
+import { Button, buttonVariants } from "../ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
+import { useState } from "react";
 
 interface AdminsListProps {
   admins: AdminType[];
   isLoading: boolean;
   error: string | null;
+  onDeleteSuccess: () => void;
 }
 
-export default function AdminsList({ admins, isLoading, error }: AdminsListProps) {
+export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }: AdminsListProps) {
+  const { deleteAdmin } = useAdminsApi();
+  const [adminToDelete, setAdminToDelete] = useState<AdminType | null>(null);
+
+  const handleDelete = async () => {
+    if (!adminToDelete) return;
+    
+    try {
+      await deleteAdmin(adminToDelete.id);
+      onDeleteSuccess();
+    } catch (error) {
+      console.error('Error deleting admin:', error);
+    } finally {
+      setAdminToDelete(null);
+    }
+  };
+
   return (
-    <div>
-      <h1>Admins List</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Lista de administradores</h2>
+        <div className="text-sm text-gray-500">
+          Total: {admins.length}
+        </div>
+      </div>
+
+      {error && (
+        <div className="p-4 mb-4 text-red-700 bg-red-100 rounded-lg">
+          {error}
+        </div>
+      )}
+      
       {isLoading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center p-8">
+          <p>Cargando administradores...</p>
+        </div>
       ) : (
         <>
-          {admins.length === 0 ? <p>No admins found.</p> : (
-            <ul>
+          {admins.length === 0 ? (
+            <div className="text-center p-8 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">No hay administradores registrados.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
               {admins.map(admin => (
-                <Card key={admin.id}>{admin.username}</Card>
+                <Card key={admin.id} className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{admin.username}</p>
+                    </div>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => setAdminToDelete(admin)}
+                      size="sm"
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
+                </Card>
               ))}
-            </ul>
+            </div>
           )}
         </>
       )}
+
+      <AlertDialog open={!!adminToDelete} onOpenChange={() => setAdminToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminará permanentemente el administrador
+              {adminToDelete?.username}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction className={buttonVariants({variant: 'destructive'})} onClick={handleDelete}>
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

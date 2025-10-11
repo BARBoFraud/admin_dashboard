@@ -16,10 +16,8 @@ export default function AdminsPage() {
     setError(null);
     try {
       const fetchedAdmins = await getAdminsList();
-      console.log('Fetched admins:', fetchedAdmins);
       setAdmins(fetchedAdmins);
     } catch (err) {
-      console.error('Error fetching admins:', err);
       setError(err instanceof Error ? err.message : 'Error fetching admins');
     } finally {
       setIsLoading(false);
@@ -35,14 +33,26 @@ export default function AdminsPage() {
   };
 
   return (
-    <div>
-      <h1>HOla admins</h1>
-      <AdminsList 
-        admins={admins}
-        isLoading={isLoading}
-        error={error}
-      />
-      <CreateAdminForm onAdminCreated={handleAdminCreated} />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Gestión de Administradores</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <div className="sticky top-8">
+            <h2 className="text-xl font-semibold mb-4">Crear un nuevo administrador</h2>
+            <CreateAdminForm onAdminCreated={handleAdminCreated} />
+          </div>
+        </div>
+
+        <div className="lg:col-span-2">
+          <AdminsList 
+            admins={admins}
+            isLoading={isLoading}
+            error={error}
+            onDeleteSuccess={fetchAdmins}
+          />
+        </div>
+      </div>
     </div>
   );
 }
