@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { useState } from "react";
+import { Shield } from 'lucide-react';
 
 interface AdminsListProps {
   admins: AdminType[];
@@ -42,9 +43,11 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Lista de administradores</h2>
-        <div className="text-sm text-gray-500">
-          Total: {admins.length}
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-semibold">Lista de administradores</h2>
+          <div className="px-2 py-1 text-xs bg-accent text-primary rounded-full">
+            {admins.length} activos
+          </div>
         </div>
       </div>
 
@@ -69,13 +72,19 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
               {admins.map(admin => (
                 <Card key={admin.id} className="p-4">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{admin.username}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gray-100 rounded-full">
+                        <Shield className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{admin.username}</p>
+                      </div>
                     </div>
                     <Button 
                       variant="destructive" 
                       onClick={() => setAdminToDelete(admin)}
                       size="sm"
+                      className="group-hover:opacity-100 transition-opacity"
                     >
                       Eliminar
                     </Button>

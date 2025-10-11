@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminProfile } from "@/types/admin.types";
 import axios from "axios";
 import {
   createContext,
@@ -20,6 +21,7 @@ type AuthContextType = {
   logout: () => void;
   refreshTokenFunc: () => Promise<void>;
   setTokens: (tokens: Tokens) => void;
+  getProfile: () => Promise<AdminProfile | null>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -57,6 +59,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRefreshToken(null);
   }, []);
 
+  const getProfile = useCallback(async (): Promise<AdminProfile | null> => {
+    try {
+      const response = await axios.get<AdminProfile>("http://localhost:4000/v1/admins/profile", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      throw error;
+    }
+  }, [accessToken]);
+
   const login = useCallback(
     async (username: string, password: string) => {
       try {
@@ -79,7 +93,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setTokens(tokens);
         console.log("Login successful");
       } catch (error) {
-        // 8️⃣ Manejo específico de errores de axios
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
             throw new Error("Credenciales inválidas");
@@ -160,8 +173,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       refreshTokenFunc,
       setTokens,
+      getProfile,
     }),
-    [accessToken, refreshToken, isInitialized, login, logout, refreshTokenFunc, setTokens],
+    [accessToken, refreshToken, isInitialized, login, logout, refreshTokenFunc, setTokens, getProfile],
   );
   
   if (!isInitialized) {
