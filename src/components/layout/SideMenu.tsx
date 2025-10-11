@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { X, Users, LogOut, GitGraph } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { X, Users, LogOut, GitGraph, PersonStanding } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { AdminProfile } from "@/types/admin.types";
 
 interface SideMenuProps {
   open: boolean;
@@ -13,7 +14,9 @@ interface SideMenuProps {
 
 export function SideMenu({ open, onClose }: SideMenuProps) {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, getProfile } = useAuth();
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   const navigateTo = (path: string) => {
     onClose();
@@ -24,6 +27,21 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
     logout();
     router.replace("/");
   };
+
+  const setProfileData = async () => {
+    setProfileError(null);
+    try {
+      const profileData = await getProfile();
+      setProfile(profileData);
+    } catch (err) {
+      setProfileError('No se pudo cargar el perfil del administrador');
+      console.error('Error fetching profile:', err);
+    }
+  };
+
+  useEffect(() => {
+    setProfileData();
+  }, [getProfile]);
 
   return (
     <>
@@ -46,7 +64,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
         }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-          <h2 className="text-lg font-semibold">Menú</h2>
+          <h2 className="text-lg font-semibold justify-between">Menú - <PersonStanding className="inline h-4 w-4 mx-1 text-green-500" />{profile?.username}</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>

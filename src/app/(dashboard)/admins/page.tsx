@@ -6,7 +6,7 @@ import { AdminProfile, AdminType } from "@/types/admin.types";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
-import { Circle } from "lucide-react";
+import { PersonStanding } from "lucide-react";
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<AdminType[]>([]);
@@ -68,7 +68,7 @@ export default function AdminsPage() {
         <h3 className="text-sm font-medium mb-2">Sesión Activa</h3>
         {profile ? (
           <div className="flex items-center gap-2">
-            <Circle className="w-2 h-2 text-green-500" />
+            <PersonStanding className="w-5 h-5 text-green-500" />
             <p>
               {profile.username} - <span>Administrador</span>
             </p>
