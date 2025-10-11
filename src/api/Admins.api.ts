@@ -59,6 +59,9 @@ export function useAdminsApi() {
                     headers: { Authorization: `Bearer ${newAccessToken}` }
                 });
             }
+            else if (axios.isAxiosError(error) && error.response?.status === 409) {
+                throw new Error("El nombre de usuario ya está en uso");
+            }
             throw error;
         }
     }, [accessToken, refreshTokenFunc]);

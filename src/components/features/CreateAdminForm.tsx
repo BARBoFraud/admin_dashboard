@@ -38,8 +38,8 @@ export default function CreateAdminForm() {
 
                     try {
                         await createAdmin(values.username, values.password);
-                    } catch (error) {
-                        setCreationError("Error al crear el administrador");
+                    } catch (error: any) {
+                        setCreationError(error.message || "Error al crear el administrador.");
                     } finally {
                         setIsCreating(false);
                         values.username = "";
