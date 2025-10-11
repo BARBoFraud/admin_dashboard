@@ -28,13 +28,15 @@ export default function ReportsList() {
         {reports.map((report) => (
           <li key={report.id} className="p-4 border rounded-lg shadow-sm">
             <h3 className="text-xl font-semibold">
-              {report.name} {report.lastName}
+              {report.name && report.lastName
+                ? `${report.name} ${report.lastName}`
+                : "- -"}
             </h3>
             <p className="text-sm text-gray-500">
-              Reported on: {new Date(report.createdAt).toLocaleDateString()}
+              Creado el: {new Date(report.createdAt).toLocaleDateString()}
             </p>
             <p className="mt-2">
-              <strong>Category:</strong> {report.category}
+              <strong>Categoria:</strong> {report.category}
             </p>
             {report.email && (
               <p>
@@ -43,12 +45,12 @@ export default function ReportsList() {
             )}
             {report.phoneNumber && (
               <p>
-                <strong>Phone:</strong> {report.phoneNumber}
+                <strong>Teléfono:</strong> {report.phoneNumber}
               </p>
             )}
             {report.website && (
               <p>
-                <strong>Website:</strong>{" "}
+                <strong>Sitio Web:</strong>{" "}
                 <a
                   href={report.website}
                   target="_blank"
@@ -61,7 +63,7 @@ export default function ReportsList() {
             )}
             {report.socialMedia && (
               <p>
-                <strong>Social Media:</strong>{" "}
+                <strong>Red Social:</strong>{" "}
                 <a
                   href={report.socialMedia}
                   target="_blank"
@@ -74,7 +76,7 @@ export default function ReportsList() {
             )}
             {report.username && (
               <p>
-                <strong>Username:</strong> {report.username}
+                <strong>Nombre de Usuario:</strong> {report.username}
               </p>
             )}
           </li>
@@ -83,4 +85,3 @@ export default function ReportsList() {
     </div>
   );
 }
-

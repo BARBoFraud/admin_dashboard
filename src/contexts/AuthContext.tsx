@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }),
     [accessToken, refreshToken, isInitialized, login, logout, refreshTokenFunc, setTokens],
   );
-
+  
   if (!isInitialized) {
     return <div className="flex items-center justify-center min-h-screen">
       <p>Cargando...</p>
