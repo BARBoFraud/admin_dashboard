@@ -16,7 +16,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { usePercentagesApi } from "@/api/Categories.api"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 const CHART_COLORS = {
   "Página de internet": "var(--chart-1)",
@@ -48,26 +48,19 @@ export function CategoriesGraph() {
     fetchData();
   }, [getCategoriesPercentages]);
 
-  const totalCount = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.count, 0)
-  }, [chartData]);
+  const totalCount = chartData.reduce((acc, curr) => acc + curr.count, 0);
 
-  const chartConfig = useMemo(() => {
-    const config: ChartConfig = {
-      count: {
-        label: "Cantidad",
-      }
-    };
-    
-    chartData.forEach((item) => {
-      config[item.name] = {
-        label: item.name,
-        color: item.fill
-      };
-    });
-
-    return config;
-  }, [chartData]);
+  const chartConfig: ChartConfig = {
+    count: {
+      label: "Cantidad",
+    },
+    ...Object.fromEntries(
+      chartData.map(item => [
+        item.name,
+        { label: item.name, color: item.fill }
+      ])
+    )
+  };
 
   return (
     <Card className="flex flex-col">
