@@ -17,7 +17,11 @@ const adminSchema = Yup.object().shape({
     .min(10, "La contraseña debe tener al menos 10 caracteres")
 });
 
-export default function CreateAdminForm() {
+interface CreateAdminFormProps {
+  onAdminCreated?: () => void;
+}
+
+export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps) {
     const { createAdmin } = useAdminsApi();
     const [isCreating, setIsCreating] = useState(false);
     const [creationError, setCreationError] = useState<string | null>(null);
@@ -32,18 +36,20 @@ export default function CreateAdminForm() {
                     username: "",
                     password: "",
                 }}
-                onSubmit={async (values) => {
+                onSubmit={async (values, { resetForm }) => {
                     setIsCreating(true);
                     setCreationError(null);
 
                     try {
                         await createAdmin(values.username, values.password);
+                        resetForm();
+                        if (onAdminCreated) {
+                            onAdminCreated();
+                        }
                     } catch (error: any) {
                         setCreationError(error.message || "Error al crear el administrador.");
                     } finally {
                         setIsCreating(false);
-                        values.username = "";
-                        values.password = "";
                     }
                 }}
             >
