@@ -1,4 +1,4 @@
-import AdminsList from "@/components/features/AdminsLIst";
+import AdminsList from "@/components/features/AdminsList";
 
 export default function AdminsPage() {
   return (
