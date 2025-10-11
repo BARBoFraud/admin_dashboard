@@ -36,10 +36,7 @@ export function LoginForm() {
           try {
             await login(values.username, values.password);
           } catch (error: any) {
-            setLoginError(
-              error.response?.data?.message ||
-                "Error desconocido, intenta de nuevo",
-            );
+            setLoginError(error.message || "Error desconocido, intenta de nuevo");
             setIsLoggingIn(false);
           }
         }}
