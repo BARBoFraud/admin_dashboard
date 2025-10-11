@@ -2,6 +2,7 @@
 import { useAdminsApi } from "@/api/Admins.api";
 import { AdminType } from "@/types/admin.types";
 import { useEffect, useState } from "react";
+import { Card } from "../ui/card";
 
 export default function AdminsList() {
     const [admins, setAdmins] = useState<AdminType[]>([]);
@@ -10,15 +11,11 @@ export default function AdminsList() {
     const { getAdminsList } = useAdminsApi();
 
     useEffect(() => {
-        console.log('AdminsList component mounted'); // Nuevo log
-        
         const fetchAdmins = async () => {
-            console.log('fetchAdmins function called'); // Nuevo log
             if (isLoading) return;
             setIsLoading(true);
             setError(null);
             try {
-                console.log('Making API call...'); // Nuevo log
                 const fetchedAdmins = await getAdminsList();
                 console.log('Fetched admins:', fetchedAdmins);
                 setAdmins(fetchedAdmins);
@@ -33,8 +30,6 @@ export default function AdminsList() {
         fetchAdmins();
     }, [getAdminsList]);
 
-    console.log('Current admins state:', admins); // Nuevo log
-
     return (
         <div>
             <h1>Admins List</h1>
@@ -46,7 +41,7 @@ export default function AdminsList() {
                     {admins.length === 0 ? <p>No admins found.</p> : (
                         <ul>
                             {admins.map(admin => (
-                                <li key={admin.id}>{admin.username}</li>
+                                <Card key={admin.id}>{admin.username}</Card>
                             ))}
                         </ul>
                     )}

@@ -34,5 +34,34 @@ export function useAdminsApi() {
         }
     }, [accessToken, refreshTokenFunc]);
 
-    return { getAdminsList };
+    const createAdmin = useCallback(async (username: string, password: string): Promise<void> => {
+        try {
+            await axios.post(`${BASE_URL}/v1/admins/create`, {
+                username,
+                password
+            }, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+        } catch (error) {
+            if(axios.isAxiosError(error) && error.response?.status === 401) {
+                await refreshTokenFunc();
+
+                const newAccessToken = localStorage.getItem("accessToken");
+
+                if(!newAccessToken) {
+                    throw new Error("No se pudo refrescar el token");
+                }
+
+                await axios.post(`${BASE_URL}/v1/admins/create`, {
+                    username,
+                    password
+                }, {
+                    headers: { Authorization: `Bearer ${newAccessToken}` }
+                });
+            }
+            throw error;
+        }
+    }, [accessToken, refreshTokenFunc]);
+
+    return { getAdminsList, createAdmin };
 }
