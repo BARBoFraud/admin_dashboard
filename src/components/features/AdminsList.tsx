@@ -101,8 +101,7 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el administrador
-              {adminToDelete?.username}.
+              Esta acción no se puede deshacer. Se eliminará permanentemente el administrador: <strong>{adminToDelete?.username}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
