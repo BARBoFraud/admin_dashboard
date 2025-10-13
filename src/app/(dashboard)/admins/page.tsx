@@ -60,7 +60,7 @@ export default function AdminsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Gestión de Administradores</h1>
         <p >
-          Panel de control para gestionar los accesos administrativos
+          Panel de control para gestionar los accesos administrativos.
         </p>
       </div>
 
