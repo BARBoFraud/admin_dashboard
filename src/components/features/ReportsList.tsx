@@ -36,7 +36,7 @@ export default function ReportsList() {
     <>
       <Card className="h-full">
         <div className="p-8 h-full flex flex-col">
-          <h2 className="text-2xl font-bold mb-4">Pending Reports</h2>
+          <h2 className="text-4xl font-bold mb-4">Pending Reports</h2>
 
           <div className="flex-1 overflow-auto">
             <ul className="space-y-4">

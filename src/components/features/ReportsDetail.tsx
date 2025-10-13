@@ -22,6 +22,7 @@ type Props = {
   errorMsg?: string | null;
   onClose: () => void;
   onCompleted?: (id: number) => void;
+  source?: "list" | "accepted" | "rejected";
 };
 
 export default function ReportsDetail({
@@ -31,6 +32,7 @@ export default function ReportsDetail({
   isSubmitting,
   onClose,
   onCompleted,
+  source = "list",
 }: Props) {
   if (!report) return null;
 
@@ -128,39 +130,47 @@ export default function ReportsDetail({
           </CardContent>
 
           <CardFooter className="flex justify-end gap-3 p-4 border-t border-border dark:border-border-dark">
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                if (!report) return;
-                try {
-                  const rejectedId = statusMap["Rechazado"];
-                  if (!rejectedId)
-                    throw new Error("Estatus de 'Rechazado' no encontrado");
-                  await evaluateReport(report.id, rejectedId);
-                  onCompleted && onCompleted(report.id);
-                } catch (err) {
-                } finally {
-                }
-              }}
-            >
-              Rechazar
-            </Button>
-            <Button
-              onClick={async () => {
-                if (!report) return;
-                try {
-                  const acceptedId = statusMap["Aceptado"];
-                  if (!acceptedId)
-                    throw new Error("Estatus de 'Aceptado' no encontrado");
-                  await evaluateReport(report.id, acceptedId);
-                  onCompleted && onCompleted(report.id);
-                } catch (err) {
-                } finally {
-                }
-              }}
-            >
-              Aceptar
-            </Button>
+            {/** determine which buttons to show based on source prop */}
+            {(source === "list" || source === "accepted") && (
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  if (!report) return;
+                  try {
+                    const rejectedId = statusMap["Rechazado"];
+                    if (!rejectedId)
+                      throw new Error("Estatus de 'Rechazado' no encontrado");
+                    await evaluateReport(report.id, rejectedId);
+                    onCompleted && onCompleted(report.id);
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                  }
+                }}
+              >
+                Rechazar
+              </Button>
+            )}
+
+            {(source === "list" || source === "rejected") && (
+              <Button
+                onClick={async () => {
+                  if (!report) return;
+                  try {
+                    const acceptedId = statusMap["Aceptado"];
+                    if (!acceptedId)
+                      throw new Error("Estatus de 'Aceptado' no encontrado");
+                    await evaluateReport(report.id, acceptedId);
+                    onCompleted && onCompleted(report.id);
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                  }
+                }}
+              >
+                Aceptar
+              </Button>
+            )}
           </CardFooter>
         </Card>
       </div>
