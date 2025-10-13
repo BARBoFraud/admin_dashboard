@@ -47,7 +47,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
     <>
       <div
         aria-hidden={!open}
-        className={`fixed inset-0 z-40 transition-opacity ${
+        className={`fixed inset-0 z-45 transition-opacity ${
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -77,7 +77,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
             onClick={() => navigateTo("/admins")}
           >
             <Users className="mr-2 h-4 w-4" /> Administrar cuentas de
-            administradores
+            admins
           </Button>
 
           <Button
@@ -85,7 +85,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
             className="w-full justify-start"
             onClick={() => navigateTo("/dashboard")}
           >
-            <GitGraph className="mr-2 h-4 w-4" /> Ir a Dashboard
+            <GitGraph className="mr-2 h-4 w-4" /> Dashboard
           </Button>
 
           <Button
