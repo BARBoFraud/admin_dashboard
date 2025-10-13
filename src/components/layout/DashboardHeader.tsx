@@ -12,20 +12,21 @@ export function DashboardHeader() {
 
   return (
     <header className="w-full bg-sidebar text-sidebar-foreground shadow-lg border-b border-sidebar-border">
-      <div className="max-w-7xl mx-auto px-0 py-10 flex justify-between items-center">
-        <div className="flex items-center gap-4">
+      <div className="w-full flex justify-between items-center px-10 py-6">
+        <div className="flex items-center gap-6">
           <Button variant="outline" size="icon" onClick={() => setOpen(true)}>
-            <Menu className="h-6 w-6" />
+            <Menu className="h-7 w-7" />
           </Button>
-          <img src={logo.src} alt="Logo" className="w-12 h-12 rounded-full" />
-          <h1 className="text-5xl font-bold">oFraud</h1>
+          <img src={logo.src} alt="Logo" className="w-16 h-16 rounded-full" />
+          <h1 className="text-6xl font-bold">oFraud</h1>
         </div>
         <div className="flex items-center gap-4">
-          <ModeToggle />
+          <div className="text-lg">
+            <ModeToggle />
+          </div>
         </div>
       </div>
       <SideMenu open={open} onClose={() => setOpen(false)} />
     </header>
   );
 }
-
