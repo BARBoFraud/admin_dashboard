@@ -14,9 +14,7 @@ export default function ReportsList() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<DetailedReport | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [detailSubmitting, setDetailSubmitting] = useState(false);
-  const [detailError, setDetailError] = useState<string | null>(null);
   const { getPendingReports } = useReportsApi();
   const { getReportDetail } = useReportsDetailApi();
 
@@ -36,11 +34,11 @@ export default function ReportsList() {
 
   return (
     <>
-      <Card>
-        <div className="p-8">
+      <Card className="h-full">
+        <div className="p-8 h-full flex flex-col">
           <h2 className="text-2xl font-bold mb-4">Pending Reports</h2>
 
-          <div className="max-h-[60vh] overflow-auto">
+          <div className="flex-1 overflow-auto">
             <ul className="space-y-4">
               {reports.map((report) => (
                 <li
@@ -109,17 +107,14 @@ export default function ReportsList() {
                       onClick={async () => {
                         setSelectedId(report.id);
                         setDetail(null);
-                        setDetailError(null);
-                        setDetailLoading(true);
                         try {
                           const data = await getReportDetail(report.id);
                           setDetail(data);
                         } catch (e) {
-                          setDetailError(
+                          console.error(
                             (e as Error).message || "Error cargando detalle"
                           );
                         } finally {
-                          setDetailLoading(false);
                         }
                       }}
                     >
@@ -136,13 +131,10 @@ export default function ReportsList() {
       {selectedId !== null ? (
         <ReportsDetail
           report={detail}
-          isLoading={detailLoading}
           isSubmitting={detailSubmitting}
-          errorMsg={detailError}
           onClose={() => {
             setSelectedId(null);
             setDetail(null);
-            setDetailError(null);
           }}
             onCompleted={(id: number) => {
             // remove from list when ReportsDetail reports success

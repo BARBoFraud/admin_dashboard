@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "../ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "../ui/card";
 import { Button } from "../ui/button";
 import type { DetailedReport } from "@/types/reportDetail.types";
 import { useEffect, useState } from "react";
@@ -31,8 +37,6 @@ export default function ReportsDetail({
   const { getStatuses } = useStatusApi();
   const { evaluateReport } = useReportsDetailApi();
   const [statusMap, setStatusMap] = useState<Record<string, number>>({});
-  const [localSubmitting, setLocalSubmitting] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -45,7 +49,6 @@ export default function ReportsDetail({
         setStatusMap(map);
       } catch (err) {
         console.error("Error fetching statuses", err);
-        if (mounted) setLocalError((err as Error).message || "Error cargando estatus");
       }
     })();
     return () => {
@@ -85,10 +88,17 @@ export default function ReportsDetail({
           </CardHeader>
 
           <CardContent className="space-y-6 p-6">
-            {isLoading && <p className="text-muted-foreground dark:text-muted-foreground-dark">Cargando...</p>}
-            {errorMsg && <p className="text-destructive dark:text-destructive-dark">{errorMsg}</p>}
+            {isLoading && (
+              <p className="text-muted-foreground dark:text-muted-foreground-dark">
+                Cargando...
+              </p>
+            )}
+            {errorMsg && (
+              <p className="text-destructive dark:text-destructive-dark">
+                {errorMsg}
+              </p>
+            )}
 
-            
             {/* {report.image && report.image.trim() !== "" && (
               <div className="flex justify-center mb-6">
                 <img
@@ -100,7 +110,7 @@ export default function ReportsDetail({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {fields
-                .filter(field => field.value && field.value.trim() !== "")
+                .filter((field) => field.value && field.value.trim() !== "")
                 .map((field, idx) => (
                   <div
                     key={idx}
@@ -120,44 +130,36 @@ export default function ReportsDetail({
           <CardFooter className="flex justify-end gap-3 p-4 border-t border-border dark:border-border-dark">
             <Button
               variant="destructive"
-              disabled={isSubmitting || localSubmitting}
               onClick={async () => {
                 if (!report) return;
-                setLocalError(null);
-                setLocalSubmitting(true);
                 try {
                   const rejectedId = statusMap["Rechazado"];
-                  if (!rejectedId) throw new Error("Estatus de 'Rechazado' no encontrado");
+                  if (!rejectedId)
+                    throw new Error("Estatus de 'Rechazado' no encontrado");
                   await evaluateReport(report.id, rejectedId);
                   onCompleted && onCompleted(report.id);
                 } catch (err) {
-                  setLocalError((err as Error).message || "Error procesando rechazo");
                 } finally {
-                  setLocalSubmitting(false);
                 }
               }}
             >
-              {isSubmitting || localSubmitting ? "Procesando..." : "Rechazar"}
+              Rechazar
             </Button>
             <Button
-              disabled={isSubmitting || localSubmitting}
               onClick={async () => {
                 if (!report) return;
-                setLocalError(null);
-                setLocalSubmitting(true);
                 try {
                   const acceptedId = statusMap["Aceptado"];
-                  if (!acceptedId) throw new Error("Estatus de 'Aceptado' no encontrado");
+                  if (!acceptedId)
+                    throw new Error("Estatus de 'Aceptado' no encontrado");
                   await evaluateReport(report.id, acceptedId);
                   onCompleted && onCompleted(report.id);
                 } catch (err) {
-                  setLocalError((err as Error).message || "Error procesando aceptacion");
                 } finally {
-                  setLocalSubmitting(false);
                 }
               }}
             >
-              {isSubmitting || localSubmitting ? "Procesando..." : "Aceptar"}
+              Aceptar
             </Button>
           </CardFooter>
         </Card>
