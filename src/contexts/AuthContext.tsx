@@ -33,23 +33,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
+
     const accesTokenFromStorage = localStorage.getItem("accessToken");
     const refreshTokenFromStorage = localStorage.getItem("refreshToken");
-    
+
     if (accesTokenFromStorage && refreshTokenFromStorage) {
       setAccessToken(accesTokenFromStorage);
       setRefreshToken(refreshTokenFromStorage);
     }
-    
+
     setIsInitialized(true);
   }, []);
 
   const setTokens = useCallback((tokens: Tokens) => {
-    localStorage.setItem("accessToken", tokens.accessToken);
-    localStorage.setItem("refreshToken", tokens.refreshToken);
-    setAccessToken(tokens.accessToken);
-    setRefreshToken(tokens.refreshToken);
+    if (tokens.accessToken && tokens.refreshToken) {
+      localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
+      setRefreshToken(tokens.refreshToken);
+      setAccessToken(tokens.accessToken);
+    } else {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      setAccessToken(null);
+      setRefreshToken(null);
+    }
   }, []);
 
   const clearTokens = useCallback(() => {
@@ -61,12 +68,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getProfile = useCallback(async (): Promise<AdminProfile | null> => {
     try {
-      const response = await axios.get<AdminProfile>("http://localhost:4000/v1/admins/profile", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const response = await axios.get<AdminProfile>(
+        "http://localhost:4000/v1/admins/profile",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
       return response.data;
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        await refreshTokenFunc();
+        const newAccessToken = localStorage.getItem("accessToken");
+        if (!newAccessToken) {
+          throw new Error("No se pudo refrescar el token");
+        }
+        const retryResponse = await axios.get<AdminProfile>(
+          "http://localhost:4000/v1/admins/profile",
+          {
+            headers: { Authorization: `Bearer ${newAccessToken}` },
+          },
+        );
+        return retryResponse.data;
+      }
       throw error;
     }
   }, [accessToken]);
@@ -81,17 +104,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password,
           },
         );
-        
+
         if (response.status === 401) {
           throw new Error("Credenciales inválidas");
         }
         if (response.status !== 201) {
           throw new Error("Error al iniciar sesión");
         }
-        
+
         const tokens: Tokens = response.data as Tokens;
         setTokens(tokens);
-        console.log("Login successful");
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response?.status === 401) {
@@ -113,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTokens();
       return;
     }
-    
+
     try {
       const response = await axios.post(
         "http://localhost:4000/v1/auth/admins/logout",
@@ -121,7 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           refreshToken: token,
         },
       );
-      
+
       if (response.status !== 201) {
         console.warn("Logout failed with status:", response.status);
       }
@@ -135,12 +157,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshTokenFunc = useCallback(async () => {
     const currentRefreshToken = localStorage.getItem("refreshToken");
-    
+
     if (!currentRefreshToken) {
       console.warn("No refresh token available");
       return;
     }
-    
+
     try {
       const response = await axios.post(
         "http://localhost:4000/v1/auth/admins/refresh",
@@ -148,15 +170,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           refreshToken: currentRefreshToken,
         },
       );
-      
+
       if (response.status !== 201) {
         console.error("Refresh token failed with status:", response.status);
         clearTokens();
         return;
       }
-      
-      const tokens: Tokens = response.data as Tokens;
-      setTokens(tokens);
+
+      setTokens({
+        accessToken: response.data.accessToken,
+        refreshToken: currentRefreshToken,
+      });
       console.log("Token refreshed successfully");
     } catch (error) {
       console.error("Error refreshing token:", error);
@@ -175,13 +199,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setTokens,
       getProfile,
     }),
-    [accessToken, refreshToken, isInitialized, login, logout, refreshTokenFunc, setTokens, getProfile],
+    [
+      accessToken,
+      refreshToken,
+      isInitialized,
+      login,
+      logout,
+      refreshTokenFunc,
+      setTokens,
+      getProfile,
+    ],
   );
-  
+
   if (!isInitialized) {
-    return <div className="flex items-center justify-center min-h-screen">
-      <p>Cargando...</p>
-    </div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Cargando...</p>
+      </div>
+    );
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -194,3 +229,4 @@ export function useAuth() {
   }
   return context;
 }
+
