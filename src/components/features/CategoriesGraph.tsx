@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Label, Pie, PieChart } from "recharts"
+import { Label, Pie, PieChart } from "recharts";
 import {
   Card,
   CardContent,
@@ -8,36 +8,40 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { usePercentagesApi } from "@/api/Categories.api"
-import { useEffect, useState } from "react"
+} from "@/components/ui/chart";
+import { usePercentagesApi } from "@/api/Categories.api";
+import { useEffect, useState } from "react";
 
 const CHART_COLORS = {
   "Página de internet": "var(--chart-1)",
   "Red social": "var(--chart-2)",
-  "Mensaje": "var(--chart-3)",
-  "Llamada": "var(--chart-4)",
+  Mensaje: "var(--chart-3)",
+  Llamada: "var(--chart-4)",
   "Correo electrónico": "var(--chart-5)",
-}
+};
 
 export function CategoriesGraph() {
   const { getCategoriesPercentages } = usePercentagesApi();
-  const [chartData, setChartData] = useState<{ name: string; count: number; fill: string }[]>([]);
+  const [chartData, setChartData] = useState<
+    { name: string; count: number; fill: string }[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getCategoriesPercentages();
-        const formattedData = data.map(item => ({
+        const formattedData = data.map((item) => ({
           name: item.name,
           count: Number(item.count),
-          fill: CHART_COLORS[item.name as keyof typeof CHART_COLORS] || "var(--muted)"
+          fill:
+            CHART_COLORS[item.name as keyof typeof CHART_COLORS] ||
+            "var(--muted)",
         }));
         setChartData(formattedData);
       } catch (error) {
@@ -55,11 +59,11 @@ export function CategoriesGraph() {
       label: "Cantidad",
     },
     ...Object.fromEntries(
-      chartData.map(item => [
+      chartData.map((item) => [
         item.name,
-        { label: item.name, color: item.fill }
-      ])
-    )
+        { label: item.name, color: item.fill },
+      ]),
+    ),
   };
 
   return (
@@ -110,7 +114,7 @@ export function CategoriesGraph() {
                           Total
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -122,15 +126,17 @@ export function CategoriesGraph() {
         <div className="grid grid-cols-2 gap-2 w-full">
           {chartData.map((item) => (
             <div key={item.name} className="flex items-center gap-2 text-sm">
-              <div 
-                className="w-3 h-3 rounded-full" 
+              <div
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: item.fill }}
               />
-              <span>{item.name}: {item.count}</span>
+              <span>
+                {item.name}: {item.count}
+              </span>
             </div>
           ))}
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

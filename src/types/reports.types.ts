@@ -12,3 +12,8 @@ export interface ShortPendingReport {
     email?: string | null;
     category: string;
 }
+
+export interface WeeklyReportsResponse {
+    date: string;
+    num: number;
+}
