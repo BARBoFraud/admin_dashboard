@@ -3,6 +3,7 @@ export interface ShortPendingReport {
     name?: string;
     lastName?: string;
     url?: string;
+    title: string;
     website?: string;
     socialMedia?: string | null;
     phoneNumber?: string | null;
