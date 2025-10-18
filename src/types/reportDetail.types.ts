@@ -2,7 +2,7 @@ export type DetailedReport = {
   id: number;
   name?: string;
   lastName?: string;
-  description?: string;
+  description: string;
   url?: string;
   website?: string;
   socialMedia?: string | null;
@@ -12,4 +12,6 @@ export type DetailedReport = {
   email?: string | null;
   image?: string | null;
   category: string;
+  title: string;
+  risk: string;
 };

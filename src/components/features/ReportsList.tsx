@@ -36,69 +36,33 @@ export default function ReportsList() {
     <>
       <Card className="h-full">
         <div className="p-8 h-full flex flex-col">
-          <h2 className="text-4xl font-bold mb-4">Pending Reports</h2>
+          <h2 className="text-4xl font-bold mb-4">Reportes Pendientes</h2>
 
           <div className="flex-1 overflow-auto">
-            <ul className="space-y-4">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {reports.map((report) => (
                 <li
                   key={report.id}
                   className="p-4 border rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4 items-start"
                 >
                   <div className="md:col-span-2 space-y-1">
-                    <h3 className="text-xl font-semibold">
-                      {report.name && report.lastName
-                        ? `${report.name} ${report.lastName}`
-                        : "- -"}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Creado el:{" "}
-                      {new Date(report.createdAt).toLocaleDateString()}
+                    <div className="flex items-center space-x-2 mb-2">
+                      <h3 className="text-xl font-semibold">
+                        {report.name && report.lastName
+                          ? `${report.name} ${report.lastName}`
+                          : "- -"}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Creado el:{" "}
+                        {new Date(report.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <p>
+                      <strong>Título:</strong> {report.title}
                     </p>
                     <p>
-                      <strong>Categoria:</strong> {report.category}
+                      <strong>Categoría:</strong> {report.category}
                     </p>
-                    {report.email && (
-                      <p>
-                        <strong>Email:</strong> {report.email}
-                      </p>
-                    )}
-                    {report.phoneNumber && (
-                      <p>
-                        <strong>Teléfono:</strong> {report.phoneNumber}
-                      </p>
-                    )}
-                    {report.website && (
-                      <p>
-                        <strong>Sitio Web:</strong>{" "}
-                        <a
-                          href={report.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          {report.website}
-                        </a>
-                      </p>
-                    )}
-                    {report.socialMedia && (
-                      <p>
-                        <strong>Red Social:</strong>{" "}
-                        <a
-                          href={report.socialMedia}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          {report.socialMedia}
-                        </a>
-                      </p>
-                    )}
-                    {report.username && (
-                      <p>
-                        <strong>Nombre de Usuario:</strong> {report.username}
-                      </p>
-                    )}
                   </div>
 
                   <div className="md:flex md:flex-col md:justify-start md:mt-6">
@@ -136,8 +100,7 @@ export default function ReportsList() {
             setSelectedId(null);
             setDetail(null);
           }}
-            onCompleted={(id: number) => {
-            // remove from list when ReportsDetail reports success
+          onCompleted={(id: number) => {
             setReports((prev) => prev.filter((r) => r.id !== id));
             setSelectedId(null);
           }}

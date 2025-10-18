@@ -50,7 +50,7 @@ export function useReportsApi() {
           throw new Error("No se pudo refrescar el token");
         }
         const retryResponse = await axios.get<ShortPendingReport[]>(
-          `${BASE_URL}/v1/reports/dashboard/feed`,
+          `${BASE_URL}/v1/reports/dashboard/accepted`,
           { headers: { Authorization: `Bearer ${newAccessToken}` } }
         );
         return retryResponse.data;

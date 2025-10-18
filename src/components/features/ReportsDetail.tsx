@@ -61,6 +61,7 @@ export default function ReportsDetail({
   const fields: { label: string; value?: string | null }[] = [
     { label: "Nombre", value: report.name },
     { label: "Apellido", value: report.lastName },
+    { label: "Riesgo", value: report.risk },
     { label: "Categoría", value: report.category },
     { label: "Creado", value: new Date(report.createdAt).toLocaleString() },
     { label: "Descripción", value: report.description },
@@ -79,7 +80,7 @@ export default function ReportsDetail({
         <Card className="shadow-xl rounded-xl overflow-hidden bg-background dark:bg-background-dark">
           <CardHeader className="flex justify-between items-center p-4 border-b border-border dark:border-border-dark">
             <CardTitle className="text-xl font-semibold text-foreground dark:text-foreground-dark">
-              Reporte #{report.id}
+              {report.title}
             </CardTitle>
             <button
               onClick={onClose}
@@ -130,7 +131,6 @@ export default function ReportsDetail({
           </CardContent>
 
           <CardFooter className="flex justify-end gap-3 p-4 border-t border-border dark:border-border-dark">
-            {/** determine which buttons to show based on source prop */}
             {(source === "list" || source === "accepted") && (
               <Button
                 variant="destructive"
