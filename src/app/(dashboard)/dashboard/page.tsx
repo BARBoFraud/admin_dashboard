@@ -3,10 +3,12 @@ import { CategoriesGraph } from "@/components/features/CategoriesGraph";
 import ReportsAccepted from "@/components/features/ReportsAccepted";
 import ReportsList from "@/components/features/ReportsList";
 import ReportsRejected from "@/components/features/ReportsRejected";
+import { RisksGraph } from "@/components/features/RisksGraph";
+import { WeeklyReportsChart } from "@/components/features/WeeklyReports";
 
 export default function DashboardPage() {
   return (
-    <div className="w-full p-15">
+    <div className="w-full pt-30 pb-12 p-15">
       <div className="space-y-8">
         <div className="grid gap-6 md:grid-cols-[75%_25%] items-start">
           <div className="w-full h-[75vh]">
@@ -35,6 +37,15 @@ export default function DashboardPage() {
             <div className="w-full h-[75vh]">
               <ReportsRejected />
             </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full h-72">
+            <RisksGraph />
+          </div>
+          <div className="w-full h-72">
+            <WeeklyReportsChart />
           </div>
         </div>
       </div>
