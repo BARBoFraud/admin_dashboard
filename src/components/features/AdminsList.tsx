@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { useState } from "react";
-import { Shield } from 'lucide-react';
+import { Shield } from "lucide-react";
 
 interface AdminsListProps {
   admins: AdminType[];
@@ -23,18 +23,23 @@ interface AdminsListProps {
   onDeleteSuccess: () => void;
 }
 
-export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }: AdminsListProps) {
+export default function AdminsList({
+  admins,
+  isLoading,
+  error,
+  onDeleteSuccess,
+}: AdminsListProps) {
   const { deleteAdmin } = useAdminsApi();
   const [adminToDelete, setAdminToDelete] = useState<AdminType | null>(null);
 
   const handleDelete = async () => {
     if (!adminToDelete) return;
-    
+
     try {
       await deleteAdmin(adminToDelete.id);
       onDeleteSuccess();
     } catch (error) {
-      console.error('Error deleting admin:', error);
+      console.error("Error deleting admin:", error);
     } finally {
       setAdminToDelete(null);
     }
@@ -56,7 +61,7 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
           {error}
         </div>
       )}
-      
+
       {isLoading ? (
         <div className="flex justify-center p-8">
           <p>Cargando administradores...</p>
@@ -64,12 +69,14 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
       ) : (
         <>
           {admins.length === 0 ? (
-            <div className="text-center p-8 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">No hay administradores registrados.</p>
+            <div className="text-center p-8 bg-card rounded-lg">
+              <p className="text-gray-500">
+                No hay administradores registrados.
+              </p>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {admins.map(admin => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {admins.map((admin) => (
                 <Card key={admin.id} className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -80,8 +87,8 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
                         <p className="font-medium">{admin.username}</p>
                       </div>
                     </div>
-                    <Button 
-                      variant="destructive" 
+                    <Button
+                      variant="destructive"
                       onClick={() => setAdminToDelete(admin)}
                       size="sm"
                       className="group-hover:opacity-100 transition-opacity"
@@ -96,17 +103,24 @@ export default function AdminsList({ admins, isLoading, error, onDeleteSuccess }
         </>
       )}
 
-      <AlertDialog open={!!adminToDelete} onOpenChange={() => setAdminToDelete(null)}>
+      <AlertDialog
+        open={!!adminToDelete}
+        onOpenChange={() => setAdminToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente el administrador: <strong>{adminToDelete?.username}</strong>.
+              Esta acción no se puede deshacer. Se eliminará permanentemente el
+              administrador: <strong>{adminToDelete?.username}</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className={buttonVariants({variant: 'destructive'})} onClick={handleDelete}>
+            <AlertDialogAction
+              className={buttonVariants({ variant: "destructive" })}
+              onClick={handleDelete}
+            >
               Confirmar
             </AlertDialogAction>
           </AlertDialogFooter>

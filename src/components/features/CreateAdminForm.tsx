@@ -19,6 +19,9 @@ const adminSchema = Yup.object().shape({
     .matches(/[A-Z]/, "La contraseña debe contener al menos una letra mayúscula")
     .matches(/[0-9]/, "La contraseña debe contener al menos un número")
     .matches(/[^a-zA-Z0-9]/, "La contraseña debe contener al menos un carácter especial"),
+    confirmPassword: Yup.string()
+        .required("Confirma la contraseña")
+        .oneOf([Yup.ref('password')], 'Las contraseñas no coinciden'),
 });
 
 interface CreateAdminFormProps {
@@ -39,6 +42,7 @@ export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps
                 initialValues={{
                     username: "",
                     password: "",
+                    confirmPassword: "",
                 }}
                 onSubmit={async (values, { resetForm }) => {
                     setIsCreating(true);
@@ -99,6 +103,24 @@ export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps
                                 />
                                 {errors.password && touched.password && (
                                     <p className="text-red-700 text-sm mt-1">{errors.password}</p>
+                                )}
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor="confirmPassword">Confirmar contraseña</FieldLabel>
+                                <Input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    value={values.confirmPassword}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={
+                                        errors.confirmPassword && touched.confirmPassword ? "border-red-500" : ""
+                                    }
+                                    required
+                                />
+                                {errors.confirmPassword && touched.confirmPassword && (
+                                    <p className="text-red-700 text-sm mt-1">{errors.confirmPassword}</p>
                                 )}
                             </Field>
                             <Field>
