@@ -32,21 +32,29 @@ export function useReportsDetailApi() {
   );
 
   const evaluateReport = useCallback(
-    async (reportId: number, statusId: number): Promise<void> => {
+    async (reportId: number, statusId: number, riskId?: number): Promise<void> => {
+      const body: any = { reportId, statusId };
+      if (riskId !== undefined && riskId !== null) body.riskId = riskId;
       try {
-        const res = await axios.patch( `${BASE_URL}/v1/reports/evaluate`, { reportId, statusId }, {
+        await axios.patch(`${BASE_URL}/v1/reports/evaluate`, body, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        return res.data;
+        return;
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
           await refreshTokenFunc();
           const newAccess = localStorage.getItem("accessToken");
           if (!newAccess) throw new Error("No autorizado");
-          const retry = await axios.patch( `${BASE_URL}/v1/reports/${reportId}/status`, { statusId }, {
-            headers: { Authorization: `Bearer ${newAccess}` },
-          });
-          return retry.data;
+          try {
+            const retryBody: any = { reportId, statusId };
+            if (riskId !== undefined && riskId !== null) retryBody.riskId = riskId;
+            await axios.patch(`${BASE_URL}/v1/reports/evaluate`, retryBody, {
+              headers: { Authorization: `Bearer ${newAccess}` },
+            });
+            return;
+          } catch (err) {
+            console.error("Error retrying report evaluation", err);
+          }
         }
         throw err;
       }

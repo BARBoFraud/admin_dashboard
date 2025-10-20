@@ -13,5 +13,5 @@ export type DetailedReport = {
   image?: string | null;
   category: string;
   title: string;
-  risk: string;
+  riskLevel?: string;
 };
