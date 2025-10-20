@@ -11,7 +11,7 @@ export function DashboardHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full bg-sidebar text-sidebar-foreground shadow-lg border-b border-sidebar-border">
+  <header className="fixed top-0 left-0 right-0 z-50 w-full bg-sidebar text-sidebar-foreground shadow-lg border-b border-sidebar-border">
       <div className="w-full flex justify-between items-center px-10 py-6">
         <div className="flex items-center gap-6">
           <Button variant="outline" size="icon" onClick={() => setOpen(true)}>
