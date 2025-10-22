@@ -39,6 +39,25 @@ export default function ReportsDetail({
 }: Props) {
   if (!report) return null;
 
+  // Defensive sanitization for image URL to avoid requesting malformed values
+  const rawImage = report.image;
+  const imageUrl: string | null = (() => {
+    if (!rawImage) return null;
+    const trimmed = rawImage.trim();
+    if (trimmed === "" || trimmed.toLowerCase() === "null" || trimmed.toLowerCase() === "undefined") return null;
+    if (trimmed.includes("undefined") || trimmed.includes("null")) {
+      // Log to help trace whether backend returned a malformed path
+      // eslint-disable-next-line no-console
+      console.warn("ReportsDetail: report.image looks malformed:", trimmed, "full report:", report);
+      return null;
+    }
+    // If the value is a relative path without leading slash and seems to point to public/, add leading slash
+    if (!/^https?:\/\//i.test(trimmed) && !trimmed.startsWith("/")) {
+      if (trimmed.startsWith("public/")) return `/${trimmed}`;
+    }
+    return trimmed;
+  })();
+
   const { getStatuses } = useStatusApi();
   const { getRiskList } = usePercentagesApi();
   const { evaluateReport } = useReportsDetailApi();
@@ -120,11 +139,12 @@ export default function ReportsDetail({
               </p>
             )}
 
-            {report.image && report.image.trim() !== "" && (
+            {imageUrl && (
               <div className="flex justify-center mb-6">
                 <img
-                  src={report.image}
+                  src={imageUrl}
                   className="max-h-60 object-contain rounded-lg shadow-md"
+                  alt={report.title}
                 />
               </div>
             )}
@@ -225,25 +245,26 @@ export default function ReportsDetail({
             )}
 
             {/*colo cambair el riesgo  */}
-            {(source === "riesgo") && (
+            {(source === "accepted" || source === "rejected") && (
               <Button
                 disabled={!selectedRisk || !(selectedRisk in riskMap)}
                 onClick={async () => {
                   if (!report) return;
                   if (!selectedRisk) return;
                   try {
-                    const acceptedId = statusMap["Aceptado"];
-                    if (!acceptedId)
-                      throw new Error("Estatus de 'Aceptado' no encontrado");
+                    const statusName = source === "accepted" ? "Aceptado" : "Rechazado";
+                    const statusId = statusMap[statusName];
+                    if (!statusId) throw new Error(`Estatus de '${statusName}' no encontrado`);
                     const riskId = selectedRisk ? riskMap[selectedRisk] : undefined;
                     if (selectedRisk && (riskId === undefined || riskId === null)) {
                       throw new Error("El nivel de riesgo seleccionado no tiene un id asociado");
                     }
-                    await evaluateReport(report.id, acceptedId, riskId ?? undefined);
-                    onCompleted && onCompleted(report.id);
+                    // Update only the risk by sending the same statusId
+                    await evaluateReport(report.id, statusId, riskId ?? undefined);
+                    // Close modal but don't call onCompleted (we're not changing status)
+                    onClose();
                   } catch (err) {
                     console.error(err);
-                  } finally {
                   }
                 }}
               >
