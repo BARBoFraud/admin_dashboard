@@ -10,6 +10,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-logo: var(--logo);
+  --color-logo-login: var(--logo-login);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -126,6 +128,8 @@
     0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
+  --logo: oklch(0% 0 0);
+  --logo-login: oklch(0% 0 0);
 }
 
 .dark {
@@ -185,6 +189,8 @@
   --shadow-xl:
     0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --logo: oklch(0.2046 0 0);
+  --logo-login: oklch(0.2686 0 0);
 }
 
 @layer base {
