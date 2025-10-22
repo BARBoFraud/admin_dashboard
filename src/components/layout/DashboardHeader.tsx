@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import logo from "@/public/imgMaluma.jpeg";
+import logo from "@/public/logo_red.png";
 import { Menu } from "lucide-react";
 import { SideMenu } from "@/components/layout/SideMenu";
 import { ModeToggle } from "./ModeToggle";
@@ -17,7 +17,7 @@ export function DashboardHeader() {
           <Button variant="outline" size="icon" onClick={() => setOpen(true)}>
             <Menu className="h-7 w-7" />
           </Button>
-          <img src={logo.src} alt="Logo" className="w-16 h-16 rounded-full" />
+          <img src={logo.src} alt="Logo" className="w-16 h-16" />
           <h1 className="text-6xl font-bold">oFraud</h1>
         </div>
         <div className="flex items-center gap-4">

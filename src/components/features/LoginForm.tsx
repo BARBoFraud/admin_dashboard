@@ -8,7 +8,7 @@ import { ModeToggle } from "../layout/ModeToggle";
 import { FieldGroup, FieldLabel, Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import Logo from "@/public/imgMaluma.jpeg";
+import Logo from "@/public/logo_red.png";
 
 const loginSchema = Yup.object().shape({
   username: Yup.string().required("Necesitas un nombre de usuario"),
@@ -51,7 +51,7 @@ export function LoginForm() {
                 <img
                   src={Logo.src}
                   alt="Logo"
-                  className="w-30 h-30 rounded-full mx-auto mb-4"
+                  className="w-30 h-30 mx-auto mb-4"
                 />
               </div>
               <div className="flex flex-col items-center gap-1 text-center">
