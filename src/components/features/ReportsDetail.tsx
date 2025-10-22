@@ -24,7 +24,7 @@ type Props = {
   errorMsg?: string | null;
   onClose: () => void;
   onCompleted?: (id: number) => void;
-  source?: "list" | "accepted" | "rejected";
+  source?: "list" | "accepted" | "rejected" | "riesgo";
   assignedRisk?: string | null;
 };
 
@@ -120,14 +120,14 @@ export default function ReportsDetail({
               </p>
             )}
 
-            {/* {report.image && report.image.trim() !== "" && (
+            {report.image && report.image.trim() !== "" && (
               <div className="flex justify-center mb-6">
                 <img
                   src={report.image}
                   className="max-h-60 object-contain rounded-lg shadow-md"
                 />
               </div>
-            )} */}
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
@@ -148,7 +148,7 @@ export default function ReportsDetail({
                   <p className="text-sm mt-2">Debes seleccionar un nivel de riesgo antes de aceptar o rechazar.</p>
                 )}
                 {selectedRisk && !(selectedRisk in riskMap) && (
-                  <p className="text-sm text-destructive mt-2">El nivel seleccionado no existe en la lista de riesgos del sistema. Por favor, espera a que cargue la lista o selecciona otro nivel.</p>
+                  <p className="text-sm mt-2">El nivel seleccionado no existe en la lista de riesgos del sistema. Por favor, espera a que cargue la lista o selecciona otro nivel.</p>
                 )}
               </div>
               {fields
@@ -221,6 +221,33 @@ export default function ReportsDetail({
                 }}
               >
                 Aceptar
+              </Button>
+            )}
+
+            {/*colo cambair el riesgo  */}
+            {(source === "riesgo") && (
+              <Button
+                disabled={!selectedRisk || !(selectedRisk in riskMap)}
+                onClick={async () => {
+                  if (!report) return;
+                  if (!selectedRisk) return;
+                  try {
+                    const acceptedId = statusMap["Aceptado"];
+                    if (!acceptedId)
+                      throw new Error("Estatus de 'Aceptado' no encontrado");
+                    const riskId = selectedRisk ? riskMap[selectedRisk] : undefined;
+                    if (selectedRisk && (riskId === undefined || riskId === null)) {
+                      throw new Error("El nivel de riesgo seleccionado no tiene un id asociado");
+                    }
+                    await evaluateReport(report.id, acceptedId, riskId ?? undefined);
+                    onCompleted && onCompleted(report.id);
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                  }
+                }}
+              >
+                Cambiar riesgo
               </Button>
             )}
           </CardFooter>
