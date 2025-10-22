@@ -12,7 +12,6 @@ import { useReportsDetailApi } from "@/api/ReportsDetail.api";
 
 export default function ReportsAccepted() {
   const [reports, setReports] = useState<ShortPendingReport[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<DetailedReport | null>(null);
   const { getAcceptedReports } = useReportsApi();
@@ -20,13 +19,10 @@ export default function ReportsAccepted() {
 
   useEffect(() => {
     const fetchReports = async () => {
-      if (isLoading) return;
-      setIsLoading(true);
       try {
         const fetchedReports = await getAcceptedReports();
         setReports(fetchedReports);
       } finally {
-        setIsLoading(false);
       }
     };
     fetchReports();

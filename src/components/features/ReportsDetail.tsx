@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardHeader,
@@ -10,7 +11,6 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import type { DetailedReport } from "@/types/reportDetail.types";
-import { useEffect, useState } from "react";
 import { useStatusApi } from "@/api/Status.api";
 import { useReportsDetailApi } from "@/api/ReportsDetail.api";
 import type { Status } from "@/types/status.types";
@@ -20,7 +20,6 @@ import { usePercentagesApi } from "@/api/Risks.api";
 type Props = {
   report: DetailedReport | null;
   isLoading?: boolean;
-  isSubmitting?: boolean;
   errorMsg?: string | null;
   onClose: () => void;
   onCompleted?: (id: number) => void;
@@ -32,41 +31,25 @@ export default function ReportsDetail({
   report,
   isLoading,
   errorMsg,
-  isSubmitting,
   onClose,
   onCompleted,
   source = "list",
 }: Props) {
-  if (!report) return null;
-
-  // Defensive sanitization for image URL to avoid requesting malformed values
-  const rawImage = report.image;
-  const imageUrl: string | null = (() => {
-    if (!rawImage) return null;
-    const trimmed = rawImage.trim();
-    if (trimmed === "" || trimmed.toLowerCase() === "null" || trimmed.toLowerCase() === "undefined") return null;
-    if (trimmed.includes("undefined") || trimmed.includes("null")) {
-      // Log to help trace whether backend returned a malformed path
-      // eslint-disable-next-line no-console
-      console.warn("ReportsDetail: report.image looks malformed:", trimmed, "full report:", report);
-      return null;
-    }
-    // If the value is a relative path without leading slash and seems to point to public/, add leading slash
-    if (!/^https?:\/\//i.test(trimmed) && !trimmed.startsWith("/")) {
-      if (trimmed.startsWith("public/")) return `/${trimmed}`;
-    }
-    return trimmed;
-  })();
-
   const { getStatuses } = useStatusApi();
   const { getRiskList } = usePercentagesApi();
   const { evaluateReport } = useReportsDetailApi();
+
   const [statusMap, setStatusMap] = useState<Record<string, number>>({});
-  const [riskMap, setRiskMap]  = useState<Record<string, number>>({});
-  const [selectedRisk, setSelectedRisk] = useState<string | null>(report.riskLevel ?? null);
+  const [riskMap, setRiskMap] = useState<Record<string, number>>({});
+  const [selectedRisk, setSelectedRisk] = useState<string | null>(
+    report?.riskLevel ?? null
+  );
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    setSelectedRisk(report?.riskLevel ?? null);
+    if (!report) return;
+
+    setSelectedRisk(report.riskLevel ?? null);
 
     let mounted = true;
     (async () => {
@@ -89,11 +72,37 @@ export default function ReportsDetail({
       } catch (err) {
         console.error("Error fetching risk list", err);
       }
+
+      try {
+        setImageUrl(null);
+
+        const imgField: string | undefined =
+          typeof report.image === "string" ? report.image : undefined;
+        setImageUrl(imgField ?? null);
+      } catch (err) {
+        console.error("Error setting image URL", err);
+      }
     })();
+
     return () => {
       mounted = false;
     };
-  }, [getStatuses, getRiskList]);
+  }, [getStatuses, getRiskList, report]);
+
+  if (!report) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="bg-background dark:bg-background-dark p-6 rounded-lg shadow-md">
+          <p className="text-muted-foreground dark:text-muted-foreground-dark">
+            No hay reporte seleccionado.
+          </p>
+          <div className="flex justify-end mt-4">
+            <Button onClick={onClose}>Cerrar</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const fields: { label: string; value?: string | null }[] = [
     { label: "Nombre", value: report.name },
@@ -114,7 +123,7 @@ export default function ReportsDetail({
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative w-full max-w-3xl pointer-events-auto">
-        <Card className="shadow-xl rounded-xl overflow-hidden bg-background dark:bg-background-dark">
+        <Card className="shadow-xl rounded-xl overflow-hidden bg-background dark:bg-background-dark max-h-[80vh]">
           <CardHeader className="flex justify-between items-center p-4 border-b border-border dark:border-border-dark">
             <CardTitle className="text-xl font-semibold text-foreground dark:text-foreground-dark">
               {report.title}
@@ -127,7 +136,7 @@ export default function ReportsDetail({
             </button>
           </CardHeader>
 
-          <CardContent className="space-y-6 p-6">
+          <CardContent className="space-y-6 p-6 overflow-auto" style={{ maxHeight: 'calc(80vh - 128px)' }}>
             {isLoading && (
               <p className="text-muted-foreground dark:text-muted-foreground-dark">
                 Cargando...
@@ -141,17 +150,22 @@ export default function ReportsDetail({
 
             {imageUrl && (
               <div className="flex justify-center mb-6">
-                <img
+                <Image
                   src={imageUrl}
-                  className="max-h-60 object-contain rounded-lg shadow-md"
                   alt={report.title}
+                  width={400}
+                  height={240}
+                  className="object-contain rounded-lg shadow-md max-h-60"
+                  unoptimized
                 />
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm text-muted-foreground mb-2">Nivel de riesgo</label>
+                <label className="block text-sm text-muted-foreground mb-2">
+                  Nivel de riesgo
+                </label>
                 <select
                   value={selectedRisk ?? ""}
                   onChange={(e) => setSelectedRisk(e.target.value || null)}
@@ -165,24 +179,32 @@ export default function ReportsDetail({
                   ))}
                 </select>
                 {!selectedRisk && (
-                  <p className="text-sm mt-2">Debes seleccionar un nivel de riesgo antes de aceptar o rechazar.</p>
+                  <p className="text-sm mt-2">
+                    Debes seleccionar un nivel de riesgo antes de aceptar o
+                    rechazar.
+                  </p>
                 )}
                 {selectedRisk && !(selectedRisk in riskMap) && (
-                  <p className="text-sm mt-2">El nivel seleccionado no existe en la lista de riesgos del sistema. Por favor, espera a que cargue la lista o selecciona otro nivel.</p>
+                  <p className="text-sm mt-2">
+                    El nivel seleccionado no existe en la lista de riesgos del
+                    sistema. Por favor, espera a que cargue la lista o
+                    selecciona otro nivel.
+                  </p>
                 )}
               </div>
+
               {fields
-                .filter((field) => field.value && field.value.trim() !== "")
-                .map((field, idx) => (
+                .filter((f) => f.value && f.value.trim() !== "")
+                .map((f, i) => (
                   <div
-                    key={idx}
+                    key={i}
                     className="bg-secondary/10 dark:bg-secondary-dark/20 p-4 rounded-lg shadow-sm flex flex-col"
                   >
                     <span className="text-sm text-muted-foreground dark:text-muted-foreground-dark">
-                      {field.label}
+                      {f.label}
                     </span>
                     <span className="font-medium break-words text-foreground dark:text-foreground-dark">
-                      {field.value}
+                      {f.value}
                     </span>
                   </div>
                 ))}
@@ -195,22 +217,20 @@ export default function ReportsDetail({
                 variant="destructive"
                 disabled={!selectedRisk || !(selectedRisk in riskMap)}
                 onClick={async () => {
-                  if (!report) return;
                   if (!selectedRisk) return;
                   try {
                     const rejectedId = statusMap["Rechazado"];
                     if (!rejectedId)
                       throw new Error("Estatus de 'Rechazado' no encontrado");
-                    // map selected risk name to its id before sending
-                    const riskId = selectedRisk ? riskMap[selectedRisk] : undefined;
-                    if (selectedRisk && (riskId === undefined || riskId === null)) {
-                      throw new Error("El nivel de riesgo seleccionado no tiene un id asociado");
-                    }
-                    await evaluateReport(report.id, rejectedId, riskId ?? undefined);
-                    onCompleted && onCompleted(report.id);
+                    const riskId = riskMap[selectedRisk];
+                    if (riskId == null)
+                      throw new Error(
+                        "El nivel de riesgo seleccionado no tiene un id asociado"
+                      );
+                    await evaluateReport(report.id, rejectedId, riskId);
+                    onCompleted?.(report.id);
                   } catch (err) {
                     console.error(err);
-                  } finally {
                   }
                 }}
               >
@@ -222,21 +242,20 @@ export default function ReportsDetail({
               <Button
                 disabled={!selectedRisk || !(selectedRisk in riskMap)}
                 onClick={async () => {
-                  if (!report) return;
                   if (!selectedRisk) return;
                   try {
                     const acceptedId = statusMap["Aceptado"];
                     if (!acceptedId)
                       throw new Error("Estatus de 'Aceptado' no encontrado");
-                    const riskId = selectedRisk ? riskMap[selectedRisk] : undefined;
-                    if (selectedRisk && (riskId === undefined || riskId === null)) {
-                      throw new Error("El nivel de riesgo seleccionado no tiene un id asociado");
-                    }
-                    await evaluateReport(report.id, acceptedId, riskId ?? undefined);
-                    onCompleted && onCompleted(report.id);
+                    const riskId = riskMap[selectedRisk];
+                    if (riskId == null)
+                      throw new Error(
+                        "El nivel de riesgo seleccionado no tiene un id asociado"
+                      );
+                    await evaluateReport(report.id, acceptedId, riskId);
+                    onCompleted?.(report.id);
                   } catch (err) {
                     console.error(err);
-                  } finally {
                   }
                 }}
               >
@@ -244,24 +263,27 @@ export default function ReportsDetail({
               </Button>
             )}
 
-            {/*colo cambair el riesgo  */}
             {(source === "accepted" || source === "rejected") && (
               <Button
+                variant="secondary"
+                className="bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
                 disabled={!selectedRisk || !(selectedRisk in riskMap)}
                 onClick={async () => {
-                  if (!report) return;
                   if (!selectedRisk) return;
                   try {
-                    const statusName = source === "accepted" ? "Aceptado" : "Rechazado";
+                    const statusName =
+                      source === "accepted" ? "Aceptado" : "Rechazado";
                     const statusId = statusMap[statusName];
-                    if (!statusId) throw new Error(`Estatus de '${statusName}' no encontrado`);
-                    const riskId = selectedRisk ? riskMap[selectedRisk] : undefined;
-                    if (selectedRisk && (riskId === undefined || riskId === null)) {
-                      throw new Error("El nivel de riesgo seleccionado no tiene un id asociado");
-                    }
-                    // Update only the risk by sending the same statusId
-                    await evaluateReport(report.id, statusId, riskId ?? undefined);
-                    // Close modal but don't call onCompleted (we're not changing status)
+                    if (!statusId)
+                      throw new Error(
+                        `Estatus de '${statusName}' no encontrado`
+                      );
+                    const riskId = riskMap[selectedRisk];
+                    if (riskId == null)
+                      throw new Error(
+                        "El nivel de riesgo seleccionado no tiene un id asociado"
+                      );
+                    await evaluateReport(report.id, statusId, riskId);
                     onClose();
                   } catch (err) {
                     console.error(err);

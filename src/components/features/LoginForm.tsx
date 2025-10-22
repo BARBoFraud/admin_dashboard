@@ -8,6 +8,7 @@ import { ModeToggle } from "../layout/ModeToggle";
 import { FieldGroup, FieldLabel, Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import Image from "next/image";
 import Logo from "@/public/logo_red.png";
 
 const loginSchema = Yup.object().shape({
@@ -35,8 +36,9 @@ export function LoginForm() {
           setLoginError(null);
           try {
             await login(values.username, values.password);
-          } catch (error: any) {
-            setLoginError(error.message || "Error desconocido, intenta de nuevo");
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            setLoginError(message || "Error desconocido, intenta de nuevo");
             setIsLoggingIn(false);
           }
         }}
@@ -48,11 +50,7 @@ export function LoginForm() {
             </div>
             <FieldGroup>
               <div>
-                <img
-                  src={Logo.src}
-                  alt="Logo"
-                  className="w-30 h-30 mx-auto mb-4"
-                />
+                <Image src={Logo} alt="Logo" className="w-30 h-30 mx-auto mb-4" />
               </div>
               <div className="flex flex-col items-center gap-1 text-center">
                 <h1 className="text-2xl font-bold">oFraud</h1>

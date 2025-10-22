@@ -66,6 +66,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRefreshToken(null);
   }, []);
 
+  const refreshTokenFunc = useCallback(async () => {
+    const currentRefreshToken = localStorage.getItem("refreshToken");
+
+    if (!currentRefreshToken) {
+      console.warn("No refresh token available");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/v1/auth/admins/refresh",
+        {
+          refreshToken: currentRefreshToken,
+        },
+      );
+
+      if (response.status !== 201) {
+        console.error("Refresh token failed with status:", response.status);
+        clearTokens();
+        return;
+      }
+
+      setTokens({
+        accessToken: response.data.accessToken,
+        refreshToken: currentRefreshToken,
+      });
+      console.log("Token refreshed successfully");
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      clearTokens();
+    }
+  }, [clearTokens, setTokens]);
+
   const getProfile = useCallback(async (): Promise<AdminProfile | null> => {
     try {
       const response = await axios.get<AdminProfile>(
@@ -92,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       throw error;
     }
-  }, [accessToken]);
+  }, [accessToken, refreshTokenFunc]);
 
   const login = useCallback(
     async (username: string, password: string) => {
@@ -155,38 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshToken, clearTokens]);
 
-  const refreshTokenFunc = useCallback(async () => {
-    const currentRefreshToken = localStorage.getItem("refreshToken");
-
-    if (!currentRefreshToken) {
-      console.warn("No refresh token available");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "http://localhost:4000/v1/auth/admins/refresh",
-        {
-          refreshToken: currentRefreshToken,
-        },
-      );
-
-      if (response.status !== 201) {
-        console.error("Refresh token failed with status:", response.status);
-        clearTokens();
-        return;
-      }
-
-      setTokens({
-        accessToken: response.data.accessToken,
-        refreshToken: currentRefreshToken,
-      });
-      console.log("Token refreshed successfully");
-    } catch (error) {
-      console.error("Error refreshing token:", error);
-      clearTokens();
-    }
-  }, [clearTokens, setTokens]);
+  
 
   const value = useMemo<AuthContextType>(
     () => ({

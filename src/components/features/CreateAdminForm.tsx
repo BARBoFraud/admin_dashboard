@@ -54,8 +54,9 @@ export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps
                         if (onAdminCreated) {
                             onAdminCreated();
                         }
-                    } catch (error: any) {
-                        setCreationError(error.message || "Error al crear el administrador.");
+                    } catch (err: unknown) {
+                        const message = err instanceof Error ? err.message : String(err);
+                        setCreationError(message || "Error al crear el administrador.");
                     } finally {
                         setIsCreating(false);
                     }

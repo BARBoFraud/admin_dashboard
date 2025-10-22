@@ -3,7 +3,7 @@ import AdminsList from "@/components/features/AdminsList";
 import CreateAdminForm from "@/components/features/CreateAdminForm";
 import { useAdminsApi } from "@/api/Admins.api";
 import { AdminProfile, AdminType } from "@/types/admin.types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { PersonStanding } from "lucide-react";
@@ -17,7 +17,7 @@ export default function AdminsPage() {
   const [profileError, setProfileError] = useState<string | null>(null);
   const { getProfile } = useAuth();
 
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -28,9 +28,9 @@ export default function AdminsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [getAdminsList]);
 
-  const setProfileData = async () => {
+  const setProfileData = useCallback(async () => {
     setProfileError(null);
     try {
       const profileData = await getProfile();
@@ -39,12 +39,12 @@ export default function AdminsPage() {
       setProfileError("No se pudo cargar el perfil del administrador");
       console.error("Error fetching profile:", err);
     }
-  };
+  }, [getProfile]);
 
   useEffect(() => {
     fetchAdmins();
     setProfileData();
-  }, [getProfile]);
+  }, [fetchAdmins, setProfileData]);
 
   const handleAdminCreated = () => {
     fetchAdmins();

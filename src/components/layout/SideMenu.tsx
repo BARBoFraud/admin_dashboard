@@ -16,7 +16,6 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
   const router = useRouter();
   const { logout, getProfile } = useAuth();
   const [profile, setProfile] = useState<AdminProfile | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
 
   const navigateTo = (path: string) => {
     onClose();
@@ -28,20 +27,18 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
     router.replace("/");
   };
 
-  const setProfileData = async () => {
-    setProfileError(null);
+  const setProfileData = React.useCallback(async () => {
     try {
       const profileData = await getProfile();
       setProfile(profileData);
     } catch (err) {
-      setProfileError('No se pudo cargar el perfil del administrador');
       console.error('Error fetching profile:', err);
     }
-  };
+  }, [getProfile]);
 
   useEffect(() => {
     setProfileData();
-  }, [getProfile]);
+  }, [setProfileData]);
 
   return (
     <>

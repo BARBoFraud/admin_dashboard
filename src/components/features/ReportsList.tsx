@@ -11,22 +11,17 @@ import type { DetailedReport } from "@/types/reportDetail.types";
 
 export default function ReportsList() {
   const [reports, setReports] = useState<ShortPendingReport[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [detail, setDetail] = useState<DetailedReport | null>(null);
-  const [detailSubmitting, setDetailSubmitting] = useState(false);
   const { getPendingReports } = useReportsApi();
   const { getReportDetail } = useReportsDetailApi();
 
   useEffect(() => {
     const fetchReports = async () => {
-      if (isLoading) return;
-      setIsLoading(true);
       try {
         const fetchedReports = await getPendingReports();
         setReports(fetchedReports);
       } finally {
-        setIsLoading(false);
       }
     };
     fetchReports();
@@ -95,7 +90,6 @@ export default function ReportsList() {
       {selectedId !== null ? (
         <ReportsDetail
           report={detail}
-          isSubmitting={detailSubmitting}
           onClose={() => {
             setSelectedId(null);
             setDetail(null);

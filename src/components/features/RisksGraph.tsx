@@ -1,8 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts";
-import type { RectangleProps } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, Cell } from "recharts";
 import {
   Card,
   CardContent,
@@ -91,23 +89,11 @@ export function RisksGraph() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar
-              dataKey="count"
-              fill="var(--chart-1)"
-              strokeWidth={2}
-              radius={8}
-              shape={(props: any) => {
-                const fill = props.payload?.fill ?? "var(--muted)";
-                return (
-                  <Rectangle
-                    {...(props as RectangleProps)}
-                    fill={fill}
-                    fillOpacity={0.8}
-                    stroke={fill}
-                  />
-                );
-              }}
-            />
+            <Bar dataKey="count" strokeWidth={2} radius={8}>
+              {chartData.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} />
+              ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>

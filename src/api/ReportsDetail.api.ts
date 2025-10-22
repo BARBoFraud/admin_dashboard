@@ -5,6 +5,12 @@ import type { DetailedReport } from "@/types/reportDetail.types";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:4000";
 
+type EvaluateReportBody = {
+  reportId: number;
+  statusId: number;
+  riskId?: number;
+};
+
 export function useReportsDetailApi() {
   const { accessToken, refreshTokenFunc } = useAuth();
 
@@ -33,7 +39,7 @@ export function useReportsDetailApi() {
 
   const evaluateReport = useCallback(
     async (reportId: number, statusId: number, riskId?: number): Promise<void> => {
-      const body: any = { reportId, statusId };
+      const body: EvaluateReportBody = { reportId, statusId };
       if (riskId !== undefined && riskId !== null) body.riskId = riskId;
       try {
         await axios.patch(`${BASE_URL}/v1/reports/evaluate`, body, {
@@ -46,7 +52,7 @@ export function useReportsDetailApi() {
           const newAccess = localStorage.getItem("accessToken");
           if (!newAccess) throw new Error("No autorizado");
           try {
-            const retryBody: any = { reportId, statusId };
+            const retryBody: EvaluateReportBody = { reportId, statusId };
             if (riskId !== undefined && riskId !== null) retryBody.riskId = riskId;
             await axios.patch(`${BASE_URL}/v1/reports/evaluate`, retryBody, {
               headers: { Authorization: `Bearer ${newAccess}` },
