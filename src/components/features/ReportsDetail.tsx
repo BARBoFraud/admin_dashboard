@@ -18,12 +18,12 @@ import type { Risk } from "@/types/risks.types";
 import { usePercentagesApi } from "@/api/Risks.api";
 
 type Props = {
-  report: DetailedReport | null;
-  isLoading?: boolean;
-  errorMsg?: string | null;
-  onClose: () => void;
-  onCompleted?: (id: number) => void;
-  source?: "list" | "accepted" | "rejected" | "riesgo";
+  readonly report: DetailedReport | null;
+  readonly isLoading?: boolean;
+  readonly errorMsg?: string | null;
+  readonly onClose: () => void;
+  readonly onCompleted?: (id: number) => void;
+  readonly source?: "list" | "accepted" | "rejected" | "riesgo";
 };
 
 export default function ReportsDetail({
@@ -33,7 +33,7 @@ export default function ReportsDetail({
   onClose,
   onCompleted,
   source = "list",
-}: Props) {
+}: Readonly<Props>) {
   const { getStatuses } = useStatusApi();
   const { getRiskList } = usePercentagesApi();
   const { evaluateReport } = useReportsDetailApi();
@@ -56,7 +56,9 @@ export default function ReportsDetail({
         const statuses: Status[] = await getStatuses();
         if (!mounted) return;
         const map: Record<string, number> = {};
-        statuses.forEach((s) => (map[s.name] = s.id));
+        for (const s of statuses) {
+          map[s.name] = s.id;
+        }
         setStatusMap(map);
       } catch (err) {
         console.error("Error fetching statuses", err);
@@ -66,7 +68,9 @@ export default function ReportsDetail({
         const risks: Risk[] = await getRiskList();
         if (!mounted) return;
         const map: Record<string, number> = {};
-        risks.forEach((r) => (map[r.level] = r.id));
+        for (const r of risks) {
+          map[r.level] = r.id;
+        }
         setRiskMap(map);
       } catch (err) {
         console.error("Error fetching risk list", err);

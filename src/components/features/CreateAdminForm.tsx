@@ -25,10 +25,10 @@ const adminSchema = Yup.object().shape({
 });
 
 interface CreateAdminFormProps {
-  onAdminCreated?: () => void;
+    readonly onAdminCreated?: () => void;
 }
 
-export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps) {
+export default function CreateAdminForm({ onAdminCreated }: Readonly<CreateAdminFormProps>) {
     const { createAdmin } = useAdminsApi();
     const [isCreating, setIsCreating] = useState(false);
     const [creationError, setCreationError] = useState<string | null>(null);
