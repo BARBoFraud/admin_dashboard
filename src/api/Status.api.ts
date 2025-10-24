@@ -9,8 +9,8 @@ export function useStatusApi() {
     try {
       const res = await axios.get<Status[]>(`${BASE_URL}/v1/status/list`);
       return res.data;
-    } catch (err) {
-      throw err;
+    } catch {
+      throw new Error("Error al obtener los estados");
     }
   }, []);
 

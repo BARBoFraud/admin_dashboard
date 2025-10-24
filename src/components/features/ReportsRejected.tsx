@@ -23,6 +23,7 @@ export default function ReportsRejected() {
         const fetchedReports = await getRejectedReports();
         setReports(fetchedReports);
       } finally {
+        console.log("Fetch rejected reports completed");
       }
     };
     fetchReports();

@@ -23,6 +23,7 @@ export default function ReportsAccepted() {
         const fetchedReports = await getAcceptedReports();
         setReports(fetchedReports);
       } finally {
+        console.log("Fetch accepted reports completed");
       }
     };
     fetchReports();

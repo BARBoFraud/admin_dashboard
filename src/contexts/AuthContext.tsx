@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof globalThis.window === "undefined") return;
 
     const accesTokenFromStorage = localStorage.getItem("accessToken");
     const refreshTokenFromStorage = localStorage.getItem("refreshToken");

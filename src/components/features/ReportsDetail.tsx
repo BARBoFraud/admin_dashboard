@@ -24,7 +24,6 @@ type Props = {
   onClose: () => void;
   onCompleted?: (id: number) => void;
   source?: "list" | "accepted" | "rejected" | "riesgo";
-  assignedRisk?: string | null;
 };
 
 export default function ReportsDetail({

@@ -22,6 +22,7 @@ export default function ReportsList() {
         const fetchedReports = await getPendingReports();
         setReports(fetchedReports);
       } finally {
+        console.log("Fetch pending reports completed");
       }
     };
     fetchReports();
@@ -74,6 +75,7 @@ export default function ReportsList() {
                             (e as Error).message || "Error cargando detalle"
                           );
                         } finally {
+                          console.log("Get report detail completed");
                         }
                       }}
                     >
