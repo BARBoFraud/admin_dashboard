@@ -20,6 +20,7 @@ export function LoginForm() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const { login } = useAuth();
+  const passwordBasic = "passwordBasic123!";
 
   return (
     <Card>
