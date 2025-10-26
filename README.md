@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Instalacion y configuracion inicial del dashboard de administrador ofraud
 
-## Getting Started
+## Prerequisitos
 
-First, run the development server:
+- Nodejs >= 18.0.0 en tu servidor.
+
+## Instalacion
+
+1. Clona el repositorio
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/BARBoFraud/admin_dashboard ./<tu-carpeta>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Entra a la carpeta
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd <tu-carpeta>
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Creacion del ambiente de ejecucion
 
-## Learn More
+Copia y configura el archivo `.env.example` usando los siguientes comandos.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env
+vi .env
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Instala las dependencias del proyecto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Instala las dependencias con tu gestor preferido
+npm install
+# o
+yarn install
+# o
+pnpm install
+# o
+bun install
+```
 
-## Deploy on Vercel
+## Ejecucion del codigo
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Ejecuta los siguientes comandos en tu terminal para iniciar la ejecucion del codigo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Usa tu gestor preferido
+npm run build
+# o
+yarn run build
+# o
+pnpm run build
+# o
+bun run build
+```
+
+```bash
+# Usa tu gestor preferido
+npm run start -- -p <tu-puerto>
+# o
+yarn run start -- -p <tu-puerto>
+# o
+pnpm run start -- -p <tu-puerto>
+# o
+bun run start -- -p <tu-puerto>
+```
