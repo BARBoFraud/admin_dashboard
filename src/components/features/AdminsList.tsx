@@ -28,7 +28,7 @@ export default function AdminsList({
   isLoading,
   error,
   onDeleteSuccess,
-}: AdminsListProps) {
+}: Readonly<AdminsListProps>) {
   const { deleteAdmin } = useAdminsApi();
   const [adminToDelete, setAdminToDelete] = useState<AdminType | null>(null);
 

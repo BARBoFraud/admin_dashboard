@@ -26,13 +26,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof globalThis.window === "undefined") return;
 
     const accesTokenFromStorage = localStorage.getItem("accessToken");
     const refreshTokenFromStorage = localStorage.getItem("refreshToken");

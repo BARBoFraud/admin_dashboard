@@ -17,7 +17,7 @@ const adminSchema = Yup.object().shape({
     .min(10, "La contraseña debe tener al menos 10 caracteres")
     .matches(/[a-z]/, "La contraseña debe contener al menos una letra minúscula")
     .matches(/[A-Z]/, "La contraseña debe contener al menos una letra mayúscula")
-    .matches(/[0-9]/, "La contraseña debe contener al menos un número")
+    .matches(/\d/, "La contraseña debe contener al menos un número")
     .matches(/[^a-zA-Z0-9]/, "La contraseña debe contener al menos un carácter especial"),
     confirmPassword: Yup.string()
         .required("Confirma la contraseña")
@@ -25,10 +25,10 @@ const adminSchema = Yup.object().shape({
 });
 
 interface CreateAdminFormProps {
-  onAdminCreated?: () => void;
+    readonly onAdminCreated?: () => void;
 }
 
-export default function CreateAdminForm({ onAdminCreated }: CreateAdminFormProps) {
+export default function CreateAdminForm({ onAdminCreated }: Readonly<CreateAdminFormProps>) {
     const { createAdmin } = useAdminsApi();
     const [isCreating, setIsCreating] = useState(false);
     const [creationError, setCreationError] = useState<string | null>(null);

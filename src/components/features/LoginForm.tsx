@@ -50,7 +50,7 @@ export function LoginForm() {
             </div>
             <FieldGroup>
               <div>
-                <Image src={Logo} alt="Logo" className="w-30 h-30 mx-auto mb-4" />
+                <Image src={Logo} alt="Logo" className="w-30 h-30 mx-auto mb-4 bg-logo-login rounded-2xl p-2" />
               </div>
               <div className="flex flex-col items-center gap-1 text-center">
                 <h1 className="text-2xl font-bold">oFraud</h1>

@@ -8,11 +8,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AdminProfile } from "@/types/admin.types";
 
 interface SideMenuProps {
-  open: boolean;
-  onClose: () => void;
+  readonly open: boolean;
+  readonly onClose: () => void;
 }
 
-export function SideMenu({ open, onClose }: SideMenuProps) {
+export function SideMenu({ open, onClose }: Readonly<SideMenuProps>) {
   const router = useRouter();
   const { logout, getProfile } = useAuth();
   const [profile, setProfile] = useState<AdminProfile | null>(null);

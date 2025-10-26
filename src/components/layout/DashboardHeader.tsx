@@ -18,7 +18,7 @@ export function DashboardHeader() {
           <Button variant="outline" size="icon" onClick={() => setOpen(true)}>
             <Menu className="h-7 w-7" />
           </Button>
-          <Image src={logo} alt="Logo" className="w-16 h-16 rounded-full" width={64} height={64} />
+          <Image src={logo} alt="Logo" className="w-16 h-16 bg-logo rounded-2xl p-2" width={64} height={64} />
           <h1 className="text-6xl font-bold">oFraud</h1>
         </div>
         <div className="flex items-center gap-4">
